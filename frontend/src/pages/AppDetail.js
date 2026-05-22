@@ -77,10 +77,11 @@ export default function AppDetail() {
                         <div className="lg:col-span-5 lg:sticky lg:top-24">
                             <div className="bg-white border border-[#E6E1D6] rounded-3xl p-8 shadow-[0_8px_32px_rgba(26,25,24,0.06)]">
                                 <div className="text-xs uppercase tracking-widest text-[#8A857D] font-semibold mb-2">Assinatura mensal</div>
-                                <div className="flex items-baseline gap-2 mb-6">
+                                <div className="flex items-baseline gap-2 mb-1">
                                     <span className="font-serif-display text-5xl font-semibold text-[#1A1918]">R$ {app.price_monthly.toFixed(2).replace(".", ",")}</span>
                                     <span className="text-[#8A857D]">/mês</span>
                                 </div>
+                                <p className="text-xs text-[#524F4A] mb-6">ou em até <strong>12x de R$ {(app.price_monthly / 12).toFixed(2).replace(".", ",")}</strong> sem juros</p>
                                 <button onClick={() => navigate(`/checkout/${app.slug}`)} className="w-full bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full py-3.5 font-semibold transition-colors mb-3" data-testid="app-subscribe-button">
                                     Assinar agora
                                 </button>

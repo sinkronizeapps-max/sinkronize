@@ -13,6 +13,7 @@ export default function Checkout() {
     const [form, setForm] = useState({
         buyer_name: "", buyer_email: "",
         card_number: "4242 4242 4242 4242", card_name: "",
+        installments: 1,
         affiliation_code: new URLSearchParams(window.location.search).get("ref") || "",
     });
     const [loading, setLoading] = useState(false);
@@ -72,6 +73,16 @@ export default function Checkout() {
                             <h3 className="font-serif-display text-lg font-semibold">Pagamento</h3>
                             <input required value={form.card_number} onChange={(e) => setForm({ ...form, card_number: e.target.value })} placeholder="Número do cartão" className="w-full bg-[#FAF9F5] border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:border-[#D97757]" data-testid="checkout-card" />
                             <input required value={form.card_name} onChange={(e) => setForm({ ...form, card_name: e.target.value })} placeholder="Nome no cartão" className="w-full bg-[#FAF9F5] border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:border-[#D97757]" data-testid="checkout-card-name" />
+                            <div>
+                                <label className="block text-xs uppercase tracking-wider text-[#8A857D] font-semibold mb-2">Parcelamento</label>
+                                <select value={form.installments} onChange={(e) => setForm({ ...form, installments: parseInt(e.target.value) })} className="w-full bg-[#FAF9F5] border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:border-[#D97757]" data-testid="checkout-installments">
+                                    {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
+                                        <option key={n} value={n}>
+                                            {n === 1 ? `À vista — R$ ${app.price_monthly.toFixed(2)}` : `${n}x de R$ ${(app.price_monthly / n).toFixed(2)} sem juros`}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                             {form.affiliation_code && (
                                 <div className="bg-[#FDF4F1] border border-[#FBE6DF] rounded-xl p-3 text-sm text-[#A5472A]">
                                     Indicação aplicada: <strong>{form.affiliation_code}</strong>
@@ -80,7 +91,7 @@ export default function Checkout() {
                         </div>
 
                         <button type="submit" disabled={loading} className="w-full bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full py-4 font-semibold transition-colors disabled:opacity-60" data-testid="checkout-submit">
-                            {loading ? "Processando..." : `Pagar R$ ${app.price_monthly.toFixed(2)}`}
+                            {loading ? "Processando..." : (form.installments === 1 ? `Pagar R$ ${app.price_monthly.toFixed(2)}` : `Pagar ${form.installments}x de R$ ${(app.price_monthly / form.installments).toFixed(2)}`)}
                         </button>
                     </form>
 

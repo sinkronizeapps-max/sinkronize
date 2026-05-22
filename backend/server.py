@@ -152,6 +152,7 @@ class CheckoutIn(BaseModel):
     affiliation_code: Optional[str] = None
     card_number: str
     card_name: str
+    installments: int = 1
 
 # ============================ HELPERS ============================
 PLATFORM_FEE_PCT = 9.9  # SINKRONIZE platform fee
@@ -454,10 +455,13 @@ async def checkout(payload: CheckoutIn):
 
     sale_id = f"sale_{uuid.uuid4().hex[:10]}"
     now = datetime.now(timezone.utc)
+    installments = max(1, min(12, payload.installments or 1))
     sale = {
         "sale_id": sale_id, "app_id": a["app_id"], "app_name": a["name"],
         "buyer_email": payload.buyer_email.lower(), "buyer_name": payload.buyer_name,
         "amount": amount,
+        "installments": installments,
+        "installment_amount": round(amount / installments, 2),
         "producer_id": a["producer_id"], "affiliate_id": affiliate_id,
         "affiliation_code": payload.affiliation_code,
         "producer_amount": producer_amount,
