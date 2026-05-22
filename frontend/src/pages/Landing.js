@@ -282,17 +282,16 @@ export default function Landing() {
             </section>
 
             {/* FINAL BRAND CLOSER */}
-            <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12 lg:py-24">
-                <div className="bg-[#F1B89A] rounded-[2.5rem] p-12 lg:p-20 text-center relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D97757]/15 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3" />
-                    <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#E8A07A]/20 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3" />
+            <section className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-12 lg:py-16">
+                <div className="bg-[#ECAB8C] rounded-[2rem] py-12 px-8 lg:py-14 text-center relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#D97757]/20 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3" />
                     <div className="relative flex flex-col items-center">
-                        <img src="https://customer-assets.emergentagent.com/job_affiliate-hub-v1/artifacts/76xgxdey_L.png" alt="SINKRONIZE" className="w-full max-w-lg lg:max-w-2xl object-contain mb-10" />
-                        <p className="text-lg text-[#1A1918]/80 max-w-xl mb-10 font-medium">Apps que vendem. Afiliados que prosperam. Comece sua jornada com a gente.</p>
-                        <Link to="/register" className="inline-flex items-center gap-2 bg-[#1A1918] hover:bg-[#2A2825] text-white rounded-full px-8 py-4 text-base font-semibold transition-all shadow-[0_8px_24px_rgba(26,25,24,0.2)] hover:shadow-[0_12px_32px_rgba(26,25,24,0.3)] hover:-translate-y-0.5" data-testid="final-cta-button">
+                        <img src="https://customer-assets.emergentagent.com/job_affiliate-hub-v1/artifacts/76xgxdey_L.png" alt="SINKRONIZE" className="w-64 lg:w-80 object-contain mb-6" />
+                        <p className="text-base text-[#1A1918]/85 max-w-md mb-7 font-medium">Apps que vendem. Afiliados que prosperam. Comece sua jornada com a gente.</p>
+                        <Link to="/register" className="inline-flex items-center gap-2 bg-[#1A1918] hover:bg-[#2A2825] text-white rounded-full px-7 py-3 text-sm font-semibold transition-all shadow-[0_6px_20px_rgba(26,25,24,0.2)] hover:-translate-y-0.5" data-testid="final-cta-button">
                             Criar minha conta <ArrowRight className="w-4 h-4" />
                         </Link>
-                        <p className="text-xs text-[#1A1918]/70 mt-6 font-medium">Cadastro grátis · Primeiro mês sem taxa para os 100 primeiros produtores</p>
+                        <p className="text-xs text-[#1A1918]/70 mt-5 font-medium">Cadastro grátis · Primeiro mês sem taxa para os 100 primeiros produtores</p>
                     </div>
                 </div>
             </section>
