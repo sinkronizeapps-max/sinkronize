@@ -113,7 +113,7 @@ export default function Landing() {
                                 </div>
                                 <div>
                                     <p className="font-semibold text-[#1A1918] text-sm">Programa Fundadores</p>
-                                    <p className="text-sm text-[#524F4A] leading-relaxed">Os 100 primeiros produtores ficam <strong>6 meses sem taxa de plataforma</strong> e ganham selo permanente "Founding Member".</p>
+                                    <p className="text-sm text-[#524F4A] leading-relaxed">Os 100 primeiros produtores ficam com o <strong>primeiro mês sem taxa de plataforma</strong> e ganham selo permanente "Founding Member".</p>
                                 </div>
                             </div>
                         </div>
@@ -289,7 +289,7 @@ export default function Landing() {
                     <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl font-semibold mb-6 text-balance">
                         Vagas de fundador<br className="hidden sm:block"/> ainda abertas.
                     </h2>
-                    <p className="text-lg lg:text-xl text-white/90 max-w-2xl mx-auto mb-10">Cadastro grátis. 6 meses sem taxa para os 100 primeiros. Sem letras miúdas.</p>
+                    <p className="text-lg lg:text-xl text-white/90 max-w-2xl mx-auto mb-10">Cadastro grátis. Primeiro mês sem taxa para os 100 primeiros. Sem letras miúdas.</p>
                     <Link to="/register" className="inline-flex items-center gap-2 bg-white text-[#1A1918] hover:bg-[#FAF9F5] rounded-full px-8 py-4 text-base font-semibold transition-colors" data-testid="final-cta-button">
                         Criar minha conta <ArrowRight className="w-4 h-4" />
                     </Link>
