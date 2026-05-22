@@ -128,7 +128,7 @@ export function Register() {
                     </h2>
                     <p className="text-lg text-white/80 leading-relaxed mb-10">Sem mensalidade. Sem letras miúdas. Você só ganha com a gente.</p>
                     <ul className="space-y-3 text-white/90">
-                        {["Acesso ao marketplace de apps", "Carteira com PIX", "Analytics em tempo real", "Suporte humano"].map((b, i) => (
+                        {["Acesso ao mercado de aplicativos", "Carteira com PIX", "Painel com métricas em tempo real", "Suporte humano"].map((b, i) => (
                             <li key={i} className="flex items-center gap-3"><span className="w-1.5 h-1.5 rounded-full bg-[#D97757]" />{b}</li>
                         ))}
                     </ul>

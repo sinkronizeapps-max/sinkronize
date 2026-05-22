@@ -113,7 +113,7 @@ export default function Landing() {
                                 </div>
                                 <div>
                                     <p className="font-semibold text-[#1A1918] text-sm">Programa Fundadores</p>
-                                    <p className="text-sm text-[#524F4A] leading-relaxed">Os 100 primeiros produtores ficam com o <strong>primeiro mês sem taxa de plataforma</strong> e ganham selo permanente "Founding Member".</p>
+                                    <p className="text-sm text-[#524F4A] leading-relaxed">Os 100 primeiros produtores ficam com o <strong>primeiro mês sem taxa de plataforma</strong> e ganham selo permanente "Membro Fundador".</p>
                                 </div>
                             </div>
                         </div>
@@ -175,7 +175,7 @@ export default function Landing() {
                         </Link>
                     </div>
                     {[
-                        { icon: ChartBar, title: "Analytics em tempo real", body: "Acompanhe vendas, conversões e ticket médio em dashboards limpos e acionáveis." },
+                        { icon: ChartBar, title: "Métricas em tempo real", body: "Acompanhe vendas, conversões e ticket médio em painéis limpos e acionáveis." },
                         { icon: Wallet, title: "Carteira interna + PIX", body: "Saldo consolidado, saques via PIX e relatórios fiscais prontos quando precisar." },
                         { icon: Award, title: "Níveis de afiliado", body: "Bronze, Prata e Ouro — benefícios e bônus aceleram conforme você cresce." },
                         { icon: ShieldCheck, title: "Antifraude embarcado", body: "Tracking de cliques, validação de pagamentos e chargebacks tratados pela plataforma." },
@@ -209,7 +209,7 @@ export default function Landing() {
                         {[
                             { n: "01", t: "Publique ou afilie-se", d: "Produtores cadastram seu app em minutos. Afiliados navegam o marketplace e escolhem o que combina com sua audiência." },
                             { n: "02", t: "Divulgue com link único", d: "Cada afiliado recebe um link com tracking. Cliques, conversões e ticket médio aparecem no painel em tempo real." },
-                            { n: "03", t: "Receba via PIX", d: "Vendas processadas? Saldo na carteira. Saque quando quiser. Splits automáticos entre produtor, afiliado e plataforma." },
+                            { n: "03", t: "Receba via PIX", d: "Vendas processadas? Saldo na carteira. Saque quando quiser. Divisão automática entre produtor, afiliado e plataforma." },
                         ].map((s, i) => (
                             <div key={i} className="fade-up" style={{animationDelay: `${i * 0.1}s`}}>
                                 <div className="font-serif-display text-5xl text-[#D97757] mb-6">{s.n}</div>
@@ -253,7 +253,7 @@ export default function Landing() {
                         </div>
                         <div className="space-y-5">
                             {[
-                                { t: "Split automático", d: "Cada venda é dividida na hora entre produtor, afiliado e plataforma, sem intervenção manual." },
+                                { t: "Divisão automática", d: "Cada venda é dividida na hora entre produtor, afiliado e plataforma, sem intervenção manual." },
                                 { t: "Taxa fixa 9,9%", d: "Sem mensalidade. Sem letras miúdas. Você só paga quando vende." },
                                 { t: "PIX integrado", d: "Saques caem direto na sua chave PIX cadastrada." },
                                 { t: "Tracking de afiliados", d: "Cada afiliado tem código único com rastreamento de cliques, conversões e ticket médio." },

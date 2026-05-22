@@ -22,7 +22,7 @@ export function ForProducers() {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[
                         { icon: Users, t: "Rede em formação", d: "Faça parte da nova rede de afiliados que está nascendo agora — vagas limitadas de fundadores." },
-                        { icon: BarChart3, t: "Analytics completo", d: "Veja em tempo real cliques, conversões, ticket médio e LTV." },
+                        { icon: BarChart3, t: "Painel completo", d: "Veja em tempo real cliques, conversões, ticket médio e receita." },
                         { icon: Wallet, t: "Pagamentos automáticos", d: "Receba via PIX direto na sua carteira após cada venda confirmada." },
                         { icon: Megaphone, t: "Materiais prontos", d: "Banners, copies e hashtags geradas automaticamente para seus afiliados." },
                         { icon: ShieldCheck, t: "Antifraude", d: "Detecção de cliques inválidos e proteção contra chargebacks." },
