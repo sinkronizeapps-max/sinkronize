@@ -283,12 +283,11 @@ export default function Landing() {
 
             {/* FINAL BRAND CLOSER */}
             <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12 lg:py-24">
-                <div className="bg-[#F5F0E8] rounded-[2.5rem] p-12 lg:p-24 text-center relative overflow-hidden">
+                <div className="bg-[#F5F0E8] rounded-[2.5rem] p-12 lg:p-20 text-center relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D97757]/10 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3" />
                     <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#A5472A]/8 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3" />
                     <div className="relative flex flex-col items-center">
-                        <img src="https://customer-assets.emergentagent.com/job_affiliate-hub-v1/artifacts/gx74436b_L1.png" alt="SINKRONIZE" className="w-32 h-32 lg:w-40 lg:h-40 object-contain mb-8 drop-shadow-[0_8px_24px_rgba(217,119,87,0.25)]" />
-                        <h2 className="font-serif-display text-5xl sm:text-6xl lg:text-8xl font-semibold tracking-tight text-[#1A1918] mb-6">SINKRONIZE</h2>
+                        <img src="https://customer-assets.emergentagent.com/job_affiliate-hub-v1/artifacts/76xgxdey_L.png" alt="SINKRONIZE" className="w-full max-w-lg lg:max-w-2xl object-contain mb-10 drop-shadow-[0_12px_32px_rgba(217,119,87,0.2)]" />
                         <p className="text-lg text-[#524F4A] max-w-xl mb-10">Apps que vendem. Afiliados que prosperam. Comece sua jornada com a gente.</p>
                         <Link to="/register" className="inline-flex items-center gap-2 bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full px-8 py-4 text-base font-semibold transition-all shadow-[0_8px_24px_rgba(217,119,87,0.25)] hover:shadow-[0_12px_32px_rgba(217,119,87,0.35)] hover:-translate-y-0.5" data-testid="final-cta-button">
                             Criar minha conta <ArrowRight className="w-4 h-4" />
