@@ -1,0 +1,188 @@
+{
+  "project_name": "SINKRONIZE",
+  "domain": "App Subscription Marketplace & Affiliate Network",
+  "theme": "LIGHT",
+  "archetype": "1 (Organic & Earthy) blended with 4 (Swiss/Editorial)",
+  "vibe": "Refined, sophisticated, warm, editorial, highly professional. Inspired by Claude (Anthropic) identity.",
+  "language": "pt-BR",
+  "colors": {
+    "background": {
+      "default": "#FAF9F5",
+      "alt": "#F5F0E8",
+      "muted": "#EFEBE0",
+      "darker_surface": "#E6E1D6"
+    },
+    "surface": {
+      "card": "#FFFFFF",
+      "glass": "bg-white/70 backdrop-blur-xl"
+    },
+    "primary": {
+      "50": "#FDF4F1",
+      "100": "#FBE6DF",
+      "200": "#F6C8BA",
+      "300": "#EEA38F",
+      "400": "#E57C61",
+      "500": "#D97757",
+      "600": "#C55D3D",
+      "700": "#A5472A",
+      "800": "#893D26",
+      "900": "#713423",
+      "default": "#D97757",
+      "hover": "#C55D3D",
+      "foreground": "#FFFFFF"
+    },
+    "text": {
+      "primary": "#1A1918",
+      "secondary": "#524F4A",
+      "tertiary": "#8A857D",
+      "inverse": "#FFFFFF",
+      "accent": "#D97757"
+    },
+    "border": {
+      "default": "#E6E1D6",
+      "focus": "#D97757"
+    },
+    "status": {
+      "success": "#2D7A5C",
+      "warning": "#D99B29",
+      "error": "#B04646",
+      "info": "#4A728A"
+    },
+    "gradients": {
+      "hero_bg": "bg-gradient-to-br from-[#FAF9F5] via-[#F5F0E8] to-[#EBE4D5]",
+      "accent_glow": "bg-gradient-to-r from-[#D97757]/20 to-transparent"
+    }
+  },
+  "typography": {
+    "headings": {
+      "font_family": "Spectral, serif",
+      "weight_default": "600",
+      "style": "Elegant, editorial, high-contrast, slightly tighter tracking.",
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-none text-[#1A1918]",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight leading-tight text-[#1A1918]",
+      "h3": "text-xl sm:text-2xl leading-snug text-[#1A1918]"
+    },
+    "body": {
+      "font_family": "Figtree, sans-serif",
+      "weight_default": "400",
+      "style": "Clean, highly legible, warm geometric sans.",
+      "large": "text-lg sm:text-xl leading-relaxed text-[#524F4A]",
+      "default": "text-base leading-relaxed text-[#524F4A]",
+      "small": "text-sm leading-normal text-[#8A857D]"
+    },
+    "labels": {
+      "style": "text-xs font-semibold uppercase tracking-[0.1em] text-[#8A857D]"
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Generous spacing. Sections should breathe. Elements shouldn't feel cramped.",
+    "container": "max-w-7xl mx-auto px-6 sm:px-8 lg:px-12",
+    "section_padding": "py-20 sm:py-32",
+    "grid_gap": "gap-8 sm:gap-12",
+    "border_radius": {
+      "card": "rounded-2xl",
+      "button": "rounded-full",
+      "input": "rounded-xl",
+      "badge": "rounded-full"
+    },
+    "shadows": {
+      "subtle": "shadow-[0_2px_8px_rgba(26,25,24,0.04)]",
+      "hover": "shadow-[0_8px_24px_rgba(217,119,87,0.12)]",
+      "glass": "shadow-[0_4px_32px_rgba(26,25,24,0.06)]"
+    }
+  },
+  "components_strategy": {
+    "buttons": {
+      "primary": "bg-[#D97757] text-white hover:bg-[#C55D3D] transition-colors duration-200 rounded-full px-8 py-3 font-medium shadow-sm hover:shadow-md",
+      "secondary": "bg-white text-[#1A1918] border border-[#E6E1D6] hover:border-[#D97757] hover:text-[#D97757] transition-colors duration-200 rounded-full px-8 py-3 font-medium shadow-sm",
+      "ghost": "text-[#524F4A] hover:text-[#1A1918] hover:bg-[#F5F0E8] transition-colors duration-200 rounded-full px-6 py-2 font-medium"
+    },
+    "cards": {
+      "default": "bg-white border border-[#E6E1D6] rounded-2xl p-6 md:p-8 shadow-[0_2px_8px_rgba(26,25,24,0.04)] hover:shadow-[0_8px_24px_rgba(26,25,24,0.08)] transition-all duration-300",
+      "flat": "bg-[#F5F0E8] rounded-2xl p-6 md:p-8 border border-transparent"
+    },
+    "navigation": {
+      "header": "fixed top-0 w-full z-50 bg-[#FAF9F5]/80 backdrop-blur-xl border-b border-[#E6E1D6] transition-all",
+      "links": "text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors"
+    },
+    "inputs": {
+      "default": "w-full bg-white border border-[#E6E1D6] rounded-xl px-4 py-3 text-[#1A1918] placeholder:text-[#8A857D] focus:outline-none focus:ring-2 focus:ring-[#D97757]/20 focus:border-[#D97757] transition-all"
+    },
+    "badges": {
+      "accent": "bg-[#FDF4F1] text-[#A5472A] border border-[#FBE6DF] px-3 py-1 rounded-full text-xs font-semibold tracking-wide",
+      "neutral": "bg-[#F5F0E8] text-[#524F4A] border border-[#E6E1D6] px-3 py-1 rounded-full text-xs font-semibold tracking-wide"
+    }
+  },
+  "interactions": {
+    "hover": "Subtle upward lift (-translate-y-1) and shadow expansion for interactive cards.",
+    "focus": "High contrast ring focus:ring-[#D97757] focus:ring-offset-2 focus:ring-offset-[#FAF9F5]",
+    "transitions": "Use 'transition-all duration-300 ease-out' globally."
+  },
+  "iconography": {
+    "library": "lucide-react",
+    "style": "Stroke width 1.5, matching text color, minimalist."
+  },
+  "testing": {
+    "rule": "CRITICAL: All interactive and key informational elements MUST include a `data-testid` attribute (e.g., `data-testid=\"hero-cta-button\"`, `data-testid=\"login-submit\"`)."
+  },
+  "images": {
+    "logo": {
+      "url": "https://customer-assets.emergentagent.com/job_ffca4835-3ac6-4a72-8a6d-7c6ccc5f62ae/artifacts/fsn7ciz3_LOGO.jpeg",
+      "description": "SINKRONIZE Logo (Colorful on light salmon background). Must be used in header and footer."
+    },
+    "hero": {
+      "url": "https://images.unsplash.com/photo-1572021335469-31706a17aaef?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwyfHx5b3VuZyUyMGRpdmVyc2UlMjBwcm9mZXNzaW9uYWxzJTIwd29ya2luZyUyMG9uJTIwbGFwdG9wJTIwbW9kZXJuJTIwYnJpZ2h0JTIwb2ZmaWNlfGVufDB8fHx8MTc3OTQ3NjQwOHww&ixlib=rb-4.1.0&q=85",
+      "description": "Four coworkers smiling around laptop at table. Use this for the hero section or social proof section of the landing page. Must apply a subtle gradient overlay or rounded clipping mask to fit the soft aesthetic."
+    },
+    "features": [
+      {
+        "url": "https://static.prod-images.emergentagent.com/jobs/ffca4835-3ac6-4a72-8a6d-7c6ccc5f62ae/images/50362c9c9408dc81e507709977da56108e776ae1265c9428e377da3e7031b342.png",
+        "description": "Abstract 3D shapes on warm background. Use this to illustrate the 'Ecosystem' or 'Platform Tech' feature section without using a generic UI screenshot."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1690378820474-b468b8ee64d3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMGRpdmVyc2UlMjBwcm9mZXNzaW9uYWxzJTIwd29ya2luZyUyMG9uJTIwbGFwdG9wJTIwbW9kZXJuJTIwYnJpZ2h0JTIwb2ZmaWNlfGVufDB8fHx8MTc3OTQ3NjQwOHww&ixlib=rb-4.1.0&q=85",
+        "description": "People collaborating on laptops. Use for the 'Affiliates' or 'Community' section."
+      }
+    ],
+    "dashboard_mockup": {
+      "url": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2ODl8MHwxfHNlYXJjaHwxfHxtaW5pbWFsaXN0JTIwY2xlYW4lMjBkYXNoYm9hcmQlMjBhbmFseXRpY3MlMjBjaGFydHN8ZW58MHx8fHwxNzc5NDc2NDA4fDA&ixlib=rb-4.1.0&q=85",
+      "description": "Clean dashboard graph on screen. Use as a visual representation for the 'Producer Dashboard Analytics' feature."
+    },
+    "app_icon_placeholder": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/ffca4835-3ac6-4a72-8a6d-7c6ccc5f62ae/images/2f64e36dec385a9615fb66cb056f839c83c8d2628db050564a42379cc563937a.png",
+      "description": "Elegant abstract line art icon. Use as a placeholder for App/Product thumbnails in the marketplace."
+    }
+  },
+  "page_structures": {
+    "landing_page": {
+      "sections": [
+        "Header Nav (Sticky, Glassmorphism, Login/Signup CTAs)",
+        "Hero Section (Split layout: Strong Serif H1, App Marketplace Value Prop, Email Capture or Primary CTA 'Começar Agora', Image on right or overlapping abstract layout)",
+        "Social Proof / Logos (Trusted by...)",
+        "Value Proposition Bento Grid ('Para Produtores', 'Para Afiliados', 'Marketplace')",
+        "How it Works (Step by step with generous spacing and large elegant typography)",
+        "Top Apps Category Carousel (Marketplace preview)",
+        "Numbers/Scale (Millions transacted, Active affiliates, etc.)",
+        "Final CTA (Warm coral background card with large text)",
+        "Footer (Darker beige bg, logo, links, legal)"
+      ]
+    },
+    "marketplace": {
+      "layout": "Search Bar + Category Pills on top. Grid of App Cards below. Each card has App Icon, Name, Commission %, Price, Rating.",
+      "filters": "Sidebar or top dropdowns for Category, Commission Tier, Recency."
+    },
+    "dashboards": {
+      "layout": "Sidebar (left, fixed, #FAF9F5 background, subtle right border), Main Content Area (right, #FFFFFF background).",
+      "style": "Highly functional, information dense but breathable. Avoid heavy shadows. Use flat borders. Tiers (Bronze/Silver/Gold) represented by distinct badge colors."
+    }
+  },
+  "instructions_to_main_agent": [
+    "Use standard HTML tags (div, section, main, h1, p) heavily styled with Tailwind for the landing page to allow creative layout freedom.",
+    "Use Shadcn components for complex interactions like Modals, Selects, and Tabs (especially inside the Dashboards and Checkout).",
+    "Customize Shadcn primitives to remove the standard Vercel 'black/white' tech look. Apply the SINKRONIZE warm color palette and softer borders.",
+    "Implement Google Login UI in the Auth screens.",
+    "Ensure the application supports a dual flow: Producers (creating/managing apps) and Affiliates (browsing apps, getting links, seeing commissions).",
+    "Make sure all components are written in .js/.jsx, NOT TypeScript (.tsx).",
+    "CRITICAL: Add `data-testid` to all CTAs, navigation links, form inputs, and interactive widgets."
+  ]
+}
