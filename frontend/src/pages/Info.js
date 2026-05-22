@@ -21,7 +21,7 @@ export function ForProducers() {
             <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-20">
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[
-                        { icon: Users, t: "Rede pronta", d: "Acesso a 8.4k afiliados ativos prontos para vender seu produto." },
+                        { icon: Users, t: "Rede em formação", d: "Faça parte da nova rede de afiliados que está nascendo agora — vagas limitadas de fundadores." },
                         { icon: BarChart3, t: "Analytics completo", d: "Veja em tempo real cliques, conversões, ticket médio e LTV." },
                         { icon: Wallet, t: "Pagamentos automáticos", d: "Receba via PIX direto na sua carteira após cada venda confirmada." },
                         { icon: Megaphone, t: "Materiais prontos", d: "Banners, copies e hashtags geradas automaticamente para seus afiliados." },
@@ -64,8 +64,8 @@ export function ForAffiliates() {
                 <div className="grid md:grid-cols-3 gap-6">
                     {[
                         { tier: "Bronze", color: "#A5472A", req: "Inicial", b: ["Comissão padrão", "Link único", "Materiais básicos"] },
-                        { tier: "Prata", color: "#524F4A", req: "R$ 1.000 em vendas", b: ["+5% sobre comissão", "Suporte prioritário", "Bônus mensais"] },
-                        { tier: "Ouro", color: "#D97757", req: "R$ 5.000 em vendas", b: ["+10% sobre comissão", "Acesso antecipado a apps", "Mentorias exclusivas"] },
+                        { tier: "Prata", color: "#524F4A", req: "A partir de R$ 1.000 em vendas", b: ["+5% sobre comissão", "Suporte prioritário", "Bônus mensais"] },
+                        { tier: "Ouro", color: "#D97757", req: "A partir de R$ 5.000 em vendas", b: ["+10% sobre comissão", "Acesso antecipado a apps", "Mentorias exclusivas"] },
                     ].map((t, i) => (
                         <div key={i} className="bg-white border border-[#E6E1D6] rounded-3xl p-8 hover:border-[#D97757]/40 transition-colors">
                             <div className="w-12 h-12 rounded-full mb-5" style={{ background: `${t.color}20`, border: `2px solid ${t.color}` }} />

@@ -3,12 +3,76 @@ import { useEffect, useState } from "react";
 import api from "../lib/api";
 import { Layout } from "../components/Layout";
 import { AppCard } from "../components/AppCard";
-import { ArrowRight, Sparkles, Users, TrendingUp, ShieldCheck, Zap, Award, ChartBar, Wallet, Megaphone } from "lucide-react";
+import { ArrowRight, Sparkles, Users, TrendingUp, ShieldCheck, Zap, Award, ChartBar, Wallet, Megaphone, Calculator } from "lucide-react";
 
 const HERO_IMG = "https://images.unsplash.com/photo-1572021335469-31706a17aaef?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwyfHx5b3VuZyUyMGRpdmVyc2UlMjBwcm9mZXNzaW9uYWxzJTIwd29ya2luZyUyMG9uJTIwbGFwdG9wJTIwbW9kZXJuJTIwYnJpZ2h0JTIwb2ZmaWNlfGVufDB8fHx8MTc3OTQ3NjQwOHww&ixlib=rb-4.1.0&q=85";
 const ABSTRACT = "https://static.prod-images.emergentagent.com/jobs/ffca4835-3ac6-4a72-8a6d-7c6ccc5f62ae/images/50362c9c9408dc81e507709977da56108e776ae1265c9428e377da3e7031b342.png";
 
-const TRUSTED = ["nubank", "loft", "ifood", "stone", "creditas", "quintoandar", "rappi", "olist"];
+const CATEGORIES = ["Bem-estar", "Produtividade", "Fitness", "Finanças", "Culinária", "Educação", "Pets", "Negócios"];
+
+function EarningsCalculator() {
+    const [price, setPrice] = useState(29.9);
+    const [commission, setCommission] = useState(50);
+    const [sales, setSales] = useState(30);
+    const platformFee = 9.9;
+    const afterPlatform = price * (1 - platformFee / 100);
+    const affiliatePer = afterPlatform * (commission / 100);
+    const producerPer = afterPlatform - affiliatePer;
+    const monthlyAffiliate = affiliatePer * sales;
+    const monthlyProducer = producerPer * sales;
+
+    return (
+        <div className="bg-white border border-[#E6E1D6] rounded-3xl p-8 lg:p-12" data-testid="earnings-calculator">
+            <div className="flex items-center gap-3 mb-2">
+                <Calculator className="w-6 h-6 text-[#D97757]" strokeWidth={1.5} />
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D97757]">Calculadora honesta</span>
+            </div>
+            <h3 className="font-serif-display text-3xl lg:text-4xl font-semibold tracking-tight text-[#1A1918] mb-2">Quanto você pode ganhar?</h3>
+            <p className="text-[#524F4A] mb-8">Ajuste os valores e veja o split em tempo real.</p>
+
+            <div className="grid lg:grid-cols-2 gap-12">
+                <div className="space-y-6">
+                    <div>
+                        <div className="flex justify-between mb-2">
+                            <label className="text-sm font-medium text-[#1A1918]">Preço da assinatura</label>
+                            <span className="font-serif-display text-lg font-semibold">R$ {price.toFixed(2)}</span>
+                        </div>
+                        <input type="range" min="9.9" max="199" step="1" value={price} onChange={(e) => setPrice(parseFloat(e.target.value))} className="w-full accent-[#D97757]" data-testid="calc-price" />
+                    </div>
+                    <div>
+                        <div className="flex justify-between mb-2">
+                            <label className="text-sm font-medium text-[#1A1918]">Comissão do afiliado</label>
+                            <span className="font-serif-display text-lg font-semibold">{commission}%</span>
+                        </div>
+                        <input type="range" min="10" max="80" step="5" value={commission} onChange={(e) => setCommission(parseInt(e.target.value))} className="w-full accent-[#D97757]" data-testid="calc-commission" />
+                    </div>
+                    <div>
+                        <div className="flex justify-between mb-2">
+                            <label className="text-sm font-medium text-[#1A1918]">Vendas por mês</label>
+                            <span className="font-serif-display text-lg font-semibold">{sales}</span>
+                        </div>
+                        <input type="range" min="1" max="500" step="1" value={sales} onChange={(e) => setSales(parseInt(e.target.value))} className="w-full accent-[#D97757]" data-testid="calc-sales" />
+                    </div>
+                </div>
+
+                <div className="bg-[#F5F0E8] rounded-2xl p-6 lg:p-8 space-y-5">
+                    <div>
+                        <div className="text-xs uppercase tracking-widest text-[#8A857D] font-semibold mb-1">Afiliado recebe / mês</div>
+                        <div className="font-serif-display text-4xl text-[#D97757] font-semibold">R$ {monthlyAffiliate.toFixed(2)}</div>
+                    </div>
+                    <div className="border-t border-[#E6E1D6] pt-5">
+                        <div className="text-xs uppercase tracking-widest text-[#8A857D] font-semibold mb-1">Produtor recebe / mês</div>
+                        <div className="font-serif-display text-4xl text-[#1A1918] font-semibold">R$ {monthlyProducer.toFixed(2)}</div>
+                    </div>
+                    <div className="border-t border-[#E6E1D6] pt-5 text-sm text-[#524F4A] space-y-1">
+                        <div className="flex justify-between"><span>Taxa SINKRONIZE (9,9%)</span><span>R$ {(price * platformFee / 100 * sales).toFixed(2)}</span></div>
+                        <div className="flex justify-between font-semibold text-[#1A1918]"><span>Volume total</span><span>R$ {(price * sales).toFixed(2)}</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export default function Landing() {
     const [apps, setApps] = useState([]);
@@ -25,30 +89,32 @@ export default function Landing() {
                 <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-20 pb-24 lg:pt-32 lg:pb-32">
                     <div className="grid lg:grid-cols-12 gap-12 items-center">
                         <div className="lg:col-span-7 fade-up">
-                            <span className="inline-flex items-center gap-2 bg-[#FDF4F1] text-[#A5472A] border border-[#FBE6DF] px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide mb-7">
-                                <Sparkles className="w-3.5 h-3.5" /> Nova era de distribuição de apps
+                            <span className="inline-flex items-center gap-2 bg-[#1A1918] text-white px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide mb-7">
+                                <Sparkles className="w-3.5 h-3.5 text-[#D97757]" /> Acesso antecipado · Vagas limitadas
                             </span>
                             <h1 className="font-serif-display text-5xl sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.02] text-[#1A1918] text-balance mb-7">
                                 Apps que vendem.<br/>
                                 Afiliados que <span className="italic font-light text-[#D97757]">prosperam</span>.
                             </h1>
                             <p className="text-lg lg:text-xl text-[#524F4A] leading-relaxed max-w-2xl mb-10">
-                                A SINKRONIZE conecta desenvolvedores de apps de assinatura com uma rede curada de afiliados — comissões automáticas, pagamentos sincronizados, comunidade que cresce junto.
+                                A SINKRONIZE está chegando para conectar desenvolvedores de apps de assinatura com uma nova geração de afiliados — comissões automáticas, splits via PIX, comunidade que cresce junto.
                             </p>
                             <div className="flex flex-wrap gap-4">
                                 <Link to="/register" className="inline-flex items-center gap-2 bg-[#D97757] text-white hover:bg-[#C55D3D] rounded-full px-8 py-4 text-base font-semibold transition-all shadow-[0_8px_24px_rgba(217,119,87,0.25)] hover:shadow-[0_12px_32px_rgba(217,119,87,0.35)] hover:-translate-y-0.5" data-testid="hero-cta-primary">
-                                    Começar agora <ArrowRight className="w-4 h-4" />
+                                    Garantir vaga de fundador <ArrowRight className="w-4 h-4" />
                                 </Link>
                                 <Link to="/marketplace" className="inline-flex items-center gap-2 bg-white text-[#1A1918] hover:border-[#D97757] hover:text-[#D97757] border border-[#E6E1D6] rounded-full px-8 py-4 text-base font-semibold transition-colors" data-testid="hero-cta-secondary">
                                     Ver marketplace
                                 </Link>
                             </div>
-                            <div className="flex items-center gap-8 mt-12 text-sm text-[#524F4A]">
-                                <div><span className="font-serif-display text-2xl text-[#1A1918] font-semibold">R$ 12M+</span><div className="text-xs text-[#8A857D] uppercase tracking-wider mt-1">transacionados</div></div>
-                                <div className="w-px h-10 bg-[#E6E1D6]" />
-                                <div><span className="font-serif-display text-2xl text-[#1A1918] font-semibold">8.4k</span><div className="text-xs text-[#8A857D] uppercase tracking-wider mt-1">afiliados ativos</div></div>
-                                <div className="w-px h-10 bg-[#E6E1D6] hidden sm:block" />
-                                <div className="hidden sm:block"><span className="font-serif-display text-2xl text-[#1A1918] font-semibold">320+</span><div className="text-xs text-[#8A857D] uppercase tracking-wider mt-1">apps publicados</div></div>
+                            <div className="mt-12 flex items-start gap-3 max-w-lg">
+                                <div className="w-10 h-10 rounded-full bg-[#FDF4F1] border border-[#FBE6DF] flex items-center justify-center shrink-0">
+                                    <Award className="w-5 h-5 text-[#A5472A]" strokeWidth={1.5} />
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-[#1A1918] text-sm">Programa Fundadores</p>
+                                    <p className="text-sm text-[#524F4A] leading-relaxed">Os 100 primeiros produtores ficam <strong>6 meses sem taxa de plataforma</strong> e ganham selo permanente "Founding Member".</p>
+                                </div>
                             </div>
                         </div>
                         <div className="lg:col-span-5 relative fade-up delay-2">
@@ -57,13 +123,13 @@ export default function Landing() {
                                 <div className="relative rounded-[2rem] overflow-hidden border border-[#E6E1D6] shadow-[0_24px_64px_rgba(26,25,24,0.12)]">
                                     <img src={HERO_IMG} alt="" className="w-full h-[480px] object-cover" />
                                 </div>
-                                <div className="absolute -bottom-6 -left-6 bg-white border border-[#E6E1D6] rounded-2xl p-5 shadow-xl max-w-[240px] float-soft">
-                                    <div className="flex items-center gap-2 mb-2">
+                                <div className="absolute -bottom-6 -left-6 bg-white border border-[#E6E1D6] rounded-2xl p-5 shadow-xl max-w-[260px] float-soft">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-[10px] uppercase tracking-widest text-[#D97757] font-bold">EXEMPLO</span>
                                         <div className="w-2 h-2 rounded-full bg-[#2D7A5C]" />
-                                        <span className="text-xs uppercase tracking-widest text-[#8A857D] font-semibold">Venda ao vivo</span>
                                     </div>
                                     <p className="font-serif-display text-lg text-[#1A1918] leading-tight">+R$ 47,30</p>
-                                    <p className="text-xs text-[#524F4A]">Marina recebeu comissão de Mente Calma</p>
+                                    <p className="text-xs text-[#524F4A]">Como aparecem as comissões no seu painel</p>
                                 </div>
                             </div>
                         </div>
@@ -71,12 +137,12 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* SOCIAL PROOF MARQUEE */}
+            {/* CATEGORIES MARQUEE */}
             <section className="py-12 border-y border-[#E6E1D6] bg-[#F5F0E8]/60 overflow-hidden">
-                <p className="text-center text-xs uppercase tracking-[0.25em] text-[#8A857D] mb-8 font-semibold">Produtores e afiliados que confiam</p>
-                <div className="flex gap-16 marquee whitespace-nowrap">
-                    {[...TRUSTED, ...TRUSTED].map((b, i) => (
-                        <span key={i} className="font-serif-display text-2xl text-[#8A857D] tracking-tight italic">{b}</span>
+                <p className="text-center text-xs uppercase tracking-[0.25em] text-[#8A857D] mb-8 font-semibold">Categorias para todo tipo de criador</p>
+                <div className="flex gap-12 marquee whitespace-nowrap">
+                    {[...CATEGORIES, ...CATEGORIES, ...CATEGORIES].map((c, i) => (
+                        <span key={i} className="font-serif-display text-2xl text-[#8A857D] tracking-tight italic">{c}</span>
                     ))}
                 </div>
             </section>
@@ -94,7 +160,7 @@ export default function Landing() {
                     <div className="lg:col-span-2 bg-[#1A1918] text-white rounded-3xl p-10 lg:p-12 relative overflow-hidden">
                         <Megaphone className="w-7 h-7 text-[#D97757] mb-5" strokeWidth={1.5} />
                         <h3 className="font-serif-display text-3xl mb-4">Para produtores</h3>
-                        <p className="text-[#C8C3B8] leading-relaxed mb-6 max-w-md">Publique seu app, defina a comissão e deixe milhares de afiliados venderem por você. Receba via PIX automático.</p>
+                        <p className="text-[#C8C3B8] leading-relaxed mb-6 max-w-md">Publique seu app, defina a comissão e deixe uma rede de afiliados divulgar por você. Receba via PIX automático.</p>
                         <Link to="/produtores" className="inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-[#D97757]" data-testid="bento-producer-link">
                             Conheça as ferramentas <ArrowRight className="w-4 h-4" />
                         </Link>
@@ -110,8 +176,8 @@ export default function Landing() {
                     </div>
                     {[
                         { icon: ChartBar, title: "Analytics em tempo real", body: "Acompanhe vendas, conversões e ticket médio em dashboards limpos e acionáveis." },
-                        { icon: Wallet, title: "Carteira interna + PIX", body: "Saldo consolidado, saques instantâneos via PIX e relatórios fiscais prontos." },
-                        { icon: Award, title: "Níveis de afiliado", body: "Bronze, Prata e Ouro — comissões aceleradas e bônus exclusivos conforme você cresce." },
+                        { icon: Wallet, title: "Carteira interna + PIX", body: "Saldo consolidado, saques via PIX e relatórios fiscais prontos quando precisar." },
+                        { icon: Award, title: "Níveis de afiliado", body: "Bronze, Prata e Ouro — benefícios e bônus aceleram conforme você cresce." },
                         { icon: ShieldCheck, title: "Antifraude embarcado", body: "Tracking de cliques, validação de pagamentos e chargebacks tratados pela plataforma." },
                     ].map((f, i) => (
                         <div key={i} className="bg-white border border-[#E6E1D6] rounded-3xl p-8 hover:border-[#D97757]/40 hover:shadow-[0_8px_24px_rgba(217,119,87,0.08)] transition-all" data-testid={`bento-feature-${i}`}>
@@ -123,8 +189,15 @@ export default function Landing() {
                 </div>
             </section>
 
+            {/* CALCULATOR */}
+            <section className="bg-[#F5F0E8] py-24 lg:py-32">
+                <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+                    <EarningsCalculator />
+                </div>
+            </section>
+
             {/* HOW IT WORKS */}
-            <section id="como-funciona" className="bg-[#F5F0E8] py-24 lg:py-32">
+            <section id="como-funciona" className="py-24 lg:py-32">
                 <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                     <div className="max-w-2xl mb-20">
                         <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D97757]">Como funciona</span>
@@ -153,10 +226,10 @@ export default function Landing() {
                 <div className="flex items-end justify-between mb-12 flex-wrap gap-6">
                     <div>
                         <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D97757]">Marketplace</span>
-                        <h2 className="font-serif-display text-4xl sm:text-5xl font-semibold tracking-tight text-[#1A1918] mt-3">Apps em destaque</h2>
+                        <h2 className="font-serif-display text-4xl sm:text-5xl font-semibold tracking-tight text-[#1A1918] mt-3">Primeiros apps publicados</h2>
                     </div>
                     <Link to="/marketplace" className="inline-flex items-center gap-2 text-sm font-semibold text-[#1A1918] hover:text-[#D97757]" data-testid="see-all-apps">
-                        Ver todos os apps <ArrowRight className="w-4 h-4" />
+                        Ver todos <ArrowRight className="w-4 h-4" />
                     </Link>
                 </div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -164,27 +237,36 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* NUMBERS */}
+            {/* HONEST SPECS */}
             <section className="bg-[#1A1918] text-white py-24 lg:py-32">
                 <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-                    <div className="grid md:grid-cols-2 gap-16 items-center">
+                    <div className="grid md:grid-cols-2 gap-16 items-start">
                         <div>
-                            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D97757]">Em números</span>
+                            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D97757]">A engenharia</span>
                             <h2 className="font-serif-display text-4xl sm:text-5xl font-semibold tracking-tight mt-3 mb-6">
-                                O resultado fala<br/>por si.
+                                Sem promessas vazias.<br/>Só estrutura sólida.
                             </h2>
-                            <p className="text-[#C8C3B8] text-lg leading-relaxed">Uma plataforma que cresce porque ajuda as pessoas certas a ganharem com o que amam.</p>
+                            <p className="text-[#C8C3B8] text-lg leading-relaxed mb-8">Estamos começando — mas a infraestrutura é de plataforma madura. Veja exatamente o que está pronto:</p>
+                            <Link to="/register" className="inline-flex items-center gap-2 bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full px-7 py-3 font-semibold">
+                                Quero fazer parte <ArrowRight className="w-4 h-4" />
+                            </Link>
                         </div>
-                        <div className="grid grid-cols-2 gap-x-8 gap-y-12">
+                        <div className="space-y-5">
                             {[
-                                { v: "R$ 12.4M", l: "Volume transacionado" },
-                                { v: "8.4k", l: "Afiliados ativos" },
-                                { v: "320+", l: "Apps publicados" },
-                                { v: "97%", l: "Saques aprovados em 24h" },
+                                { t: "Split automático", d: "Produtor, afiliado e plataforma recebem cada um na sua proporção, sem intervenção manual." },
+                                { t: "Taxa fixa 9,9%", d: "Sem mensalidade. Sem letras miúdas. Você só paga quando vende." },
+                                { t: "PIX integrado", d: "Saques diretamente para sua chave PIX cadastrada." },
+                                { t: "Tracking de afiliados", d: "Cada afiliado tem código único com rastreamento de cliques, conversões e ticket médio." },
+                                { t: "Materiais prontos", d: "Banners, copy e hashtags geradas automaticamente para cada app." },
                             ].map((s, i) => (
-                                <div key={i}>
-                                    <div className="font-serif-display text-5xl lg:text-6xl text-[#D97757] mb-2">{s.v}</div>
-                                    <div className="text-sm text-[#C8C3B8]">{s.l}</div>
+                                <div key={i} className="flex gap-4 pb-5 border-b border-[#3A3935] last:border-0">
+                                    <div className="w-7 h-7 rounded-full bg-[#D97757]/15 border border-[#D97757]/30 flex items-center justify-center shrink-0 mt-0.5">
+                                        <span className="text-[10px] font-bold text-[#D97757]">{String(i + 1).padStart(2, "0")}</span>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-semibold mb-1">{s.t}</h4>
+                                        <p className="text-sm text-[#C8C3B8] leading-relaxed">{s.d}</p>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -192,15 +274,22 @@ export default function Landing() {
                 </div>
             </section>
 
+            {/* COMING SOON / TESTIMONIALS PLACEHOLDER */}
+            <section className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-24 text-center">
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D97757]">Em breve</span>
+                <h2 className="font-serif-display text-4xl sm:text-5xl font-semibold tracking-tight text-[#1A1918] mt-3 mb-5">Histórias dos nossos fundadores.</h2>
+                <p className="text-lg text-[#524F4A] max-w-2xl mx-auto">Os primeiros produtores e afiliados que entrarem agora terão seus depoimentos publicados aqui. Quem sabe o próximo seja o seu?</p>
+            </section>
+
             {/* FINAL CTA */}
-            <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-24 lg:py-32">
+            <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12 lg:py-24">
                 <div className="bg-gradient-to-br from-[#D97757] to-[#C55D3D] rounded-[2.5rem] p-12 lg:p-20 text-center text-white relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                     <Zap className="w-10 h-10 mx-auto mb-6" strokeWidth={1.5} />
                     <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl font-semibold mb-6 text-balance">
-                        Pronto para sincronizar<br className="hidden sm:block"/> seu próximo capítulo?
+                        Vagas de fundador<br className="hidden sm:block"/> ainda abertas.
                     </h2>
-                    <p className="text-lg lg:text-xl text-white/90 max-w-2xl mx-auto mb-10">Cadastro grátis. Sem mensalidade. Você só paga quando ganha.</p>
+                    <p className="text-lg lg:text-xl text-white/90 max-w-2xl mx-auto mb-10">Cadastro grátis. 6 meses sem taxa para os 100 primeiros. Sem letras miúdas.</p>
                     <Link to="/register" className="inline-flex items-center gap-2 bg-white text-[#1A1918] hover:bg-[#FAF9F5] rounded-full px-8 py-4 text-base font-semibold transition-colors" data-testid="final-cta-button">
                         Criar minha conta <ArrowRight className="w-4 h-4" />
                     </Link>
