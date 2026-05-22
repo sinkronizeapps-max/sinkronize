@@ -1,0 +1,227 @@
+import { useEffect, useState } from "react";
+import { Layout } from "../components/Layout";
+import api from "../lib/api";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { Plus, TrendingUp, DollarSign, Package, ShoppingBag, X, Megaphone, Copy } from "lucide-react";
+import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+
+const CATS = ["Bem-estar", "Produtividade", "Fitness", "Finanças", "Culinária", "Educação", "Pets", "Negócios"];
+
+export default function ProducerDashboard() {
+    const { user, loading } = useAuth();
+    const navigate = useNavigate();
+    const [stats, setStats] = useState(null);
+    const [apps, setApps] = useState([]);
+    const [sales, setSales] = useState([]);
+    const [showCreate, setShowCreate] = useState(false);
+    const [showMaterials, setShowMaterials] = useState(null);
+    const [materials, setMaterials] = useState(null);
+    const [form, setForm] = useState({
+        name: "", tagline: "", description: "", category: "Produtividade",
+        price_monthly: 29.9, commission_pct: 40,
+        icon_url: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&q=80",
+        cover_url: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&q=80",
+    });
+
+    useEffect(() => {
+        if (loading) return;
+        if (!user) { navigate("/login", { state: { from: "/dashboard" } }); return; }
+        Promise.all([
+            api.get("/stats/producer").then((r) => setStats(r.data)),
+            api.get("/my/apps").then((r) => setApps(r.data)),
+            api.get("/my/sales").then((r) => setSales(r.data)),
+        ]);
+    }, [user, loading, navigate]);
+
+    const create = async (e) => {
+        e.preventDefault();
+        try {
+            await api.post("/apps", form);
+            toast.success("App publicado!");
+            setShowCreate(false);
+            const r = await api.get("/my/apps");
+            setApps(r.data);
+        } catch (_e) { toast.error("Erro ao publicar app"); }
+    };
+
+    const openMaterials = async (app) => {
+        setShowMaterials(app);
+        const r = await api.get(`/materials/${app.app_id}`);
+        setMaterials(r.data);
+    };
+
+    if (loading || !user) return <Layout><div className="min-h-screen flex items-center justify-center">Carregando...</div></Layout>;
+
+    const cards = [
+        { icon: DollarSign, label: "Receita total", value: `R$ ${(stats?.total_revenue || 0).toFixed(2)}`, accent: true },
+        { icon: ShoppingBag, label: "Vendas", value: stats?.total_sales || 0 },
+        { icon: Package, label: "Apps publicados", value: stats?.apps_count || 0 },
+        { icon: TrendingUp, label: "Últimos 30 dias", value: `R$ ${(stats?.revenue_30d || 0).toFixed(2)}` },
+    ];
+
+    return (
+        <Layout>
+            <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-12">
+                <div className="flex items-end justify-between flex-wrap gap-4 mb-10">
+                    <div>
+                        <span className="text-xs uppercase tracking-widest text-[#D97757] font-semibold">Painel do Produtor</span>
+                        <h1 className="font-serif-display text-4xl font-semibold mt-2">Olá, {user.name?.split(" ")[0]}.</h1>
+                    </div>
+                    <button onClick={() => setShowCreate(true)} className="inline-flex items-center gap-2 bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full px-6 py-3 font-semibold transition-colors" data-testid="create-app-button">
+                        <Plus className="w-4 h-4" /> Publicar novo app
+                    </button>
+                </div>
+
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    {cards.map((c, i) => (
+                        <div key={i} className={`rounded-2xl p-6 border ${c.accent ? "bg-[#1A1918] text-white border-[#1A1918]" : "bg-white border-[#E6E1D6]"}`} data-testid={`stat-card-${i}`}>
+                            <c.icon className={`w-5 h-5 mb-3 ${c.accent ? "text-[#D97757]" : "text-[#8A857D]"}`} strokeWidth={1.5} />
+                            <div className={`text-xs uppercase tracking-wider ${c.accent ? "text-white/60" : "text-[#8A857D]"} mb-1`}>{c.label}</div>
+                            <div className="font-serif-display text-3xl font-semibold">{c.value}</div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="grid lg:grid-cols-3 gap-6 mb-10">
+                    <div className="lg:col-span-2 bg-white border border-[#E6E1D6] rounded-2xl p-6">
+                        <h3 className="font-serif-display text-xl mb-4">Receita últimos 14 dias</h3>
+                        <div className="h-64">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={stats?.chart || []}>
+                                    <CartesianGrid stroke="#EFEBE0" strokeDasharray="3 3" vertical={false} />
+                                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#8A857D" }} axisLine={false} tickLine={false} />
+                                    <YAxis tick={{ fontSize: 11, fill: "#8A857D" }} axisLine={false} tickLine={false} />
+                                    <Tooltip contentStyle={{ background: "#fff", border: "1px solid #E6E1D6", borderRadius: 12 }} />
+                                    <Line type="monotone" dataKey="value" stroke="#D97757" strokeWidth={2.5} dot={{ r: 3, fill: "#D97757" }} />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+                    <div className="bg-white border border-[#E6E1D6] rounded-2xl p-6">
+                        <h3 className="font-serif-display text-xl mb-4">Últimas vendas</h3>
+                        <div className="space-y-3 max-h-64 overflow-y-auto">
+                            {sales.slice(0, 8).map((s) => (
+                                <div key={s.sale_id} className="flex justify-between text-sm pb-2 border-b border-[#EFEBE0] last:border-0">
+                                    <div>
+                                        <div className="font-medium text-[#1A1918]">{s.app_name}</div>
+                                        <div className="text-xs text-[#8A857D]">{s.buyer_name}</div>
+                                    </div>
+                                    <div className="text-right font-semibold text-[#2D7A5C]">+R$ {s.producer_amount.toFixed(2)}</div>
+                                </div>
+                            ))}
+                            {sales.length === 0 && <p className="text-sm text-[#8A857D]">Nenhuma venda ainda.</p>}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white border border-[#E6E1D6] rounded-2xl p-6">
+                    <h3 className="font-serif-display text-xl mb-4">Meus apps ({apps.length})</h3>
+                    {apps.length === 0 ? (
+                        <p className="text-sm text-[#8A857D] py-8 text-center">Você ainda não publicou nenhum app. Clique em "Publicar novo app" para começar.</p>
+                    ) : (
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {apps.map((a) => (
+                                <div key={a.app_id} className="border border-[#E6E1D6] rounded-2xl p-4">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <img src={a.icon_url} alt="" className="w-12 h-12 rounded-xl object-cover" />
+                                        <div className="flex-1">
+                                            <div className="font-semibold">{a.name}</div>
+                                            <div className="text-xs text-[#8A857D]">{a.category} · {a.commission_pct}% comissão</div>
+                                        </div>
+                                    </div>
+                                    <div className="text-xs text-[#524F4A] space-y-1 mb-3">
+                                        <div>Assinantes: <strong>{a.subscribers}</strong></div>
+                                        <div>Preço: <strong>R$ {a.price_monthly.toFixed(2)}</strong></div>
+                                    </div>
+                                    <button onClick={() => openMaterials(a)} className="w-full text-xs bg-[#FDF4F1] text-[#A5472A] border border-[#FBE6DF] rounded-full py-2 font-semibold hover:bg-[#FBE6DF] flex items-center justify-center gap-1.5" data-testid={`materials-${a.app_id}`}>
+                                        <Megaphone className="w-3 h-3" /> Materiais de divulgação
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            {showCreate && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowCreate(false)}>
+                    <form onClick={(e) => e.stopPropagation()} onSubmit={create} className="bg-white rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto" data-testid="create-app-modal">
+                        <div className="flex justify-between items-start mb-6">
+                            <div>
+                                <h2 className="font-serif-display text-2xl font-semibold">Publicar novo app</h2>
+                                <p className="text-sm text-[#524F4A]">Preencha os detalhes do seu aplicativo.</p>
+                            </div>
+                            <button type="button" onClick={() => setShowCreate(false)}><X className="w-5 h-5" /></button>
+                        </div>
+                        <div className="space-y-4">
+                            <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nome do app" className="w-full bg-[#FAF9F5] border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:border-[#D97757]" data-testid="app-name" />
+                            <input required value={form.tagline} onChange={(e) => setForm({ ...form, tagline: e.target.value })} placeholder="Tagline (1 linha)" className="w-full bg-[#FAF9F5] border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:border-[#D97757]" data-testid="app-tagline" />
+                            <textarea required value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Descrição completa" rows={4} className="w-full bg-[#FAF9F5] border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:border-[#D97757]" data-testid="app-description" />
+                            <div className="grid grid-cols-3 gap-3">
+                                <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="bg-[#FAF9F5] border border-[#E6E1D6] rounded-xl px-4 py-3" data-testid="app-category">
+                                    {CATS.map((c) => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                                <input required type="number" step="0.01" value={form.price_monthly} onChange={(e) => setForm({ ...form, price_monthly: parseFloat(e.target.value) })} placeholder="Preço/mês" className="bg-[#FAF9F5] border border-[#E6E1D6] rounded-xl px-4 py-3" data-testid="app-price" />
+                                <input required type="number" value={form.commission_pct} onChange={(e) => setForm({ ...form, commission_pct: parseInt(e.target.value) })} placeholder="% comissão" className="bg-[#FAF9F5] border border-[#E6E1D6] rounded-xl px-4 py-3" data-testid="app-commission" />
+                            </div>
+                            <input value={form.icon_url} onChange={(e) => setForm({ ...form, icon_url: e.target.value })} placeholder="URL do ícone" className="w-full bg-[#FAF9F5] border border-[#E6E1D6] rounded-xl px-4 py-3" data-testid="app-icon" />
+                        </div>
+                        <button type="submit" className="mt-6 w-full bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full py-3 font-semibold" data-testid="app-submit">Publicar app</button>
+                    </form>
+                </div>
+            )}
+
+            {showMaterials && materials && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => { setShowMaterials(null); setMaterials(null); }}>
+                    <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-3xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-start mb-6">
+                            <div>
+                                <h2 className="font-serif-display text-2xl">Materiais — {showMaterials.name}</h2>
+                                <p className="text-sm text-[#524F4A]">Disponíveis para todos os afiliados deste app</p>
+                            </div>
+                            <button onClick={() => { setShowMaterials(null); setMaterials(null); }}><X className="w-5 h-5" /></button>
+                        </div>
+                        <div className="space-y-6">
+                            <div>
+                                <h3 className="font-semibold mb-3">Banners</h3>
+                                <div className="grid grid-cols-3 gap-3">
+                                    {materials.banners.map((b, i) => (
+                                        <div key={i} className="border border-[#E6E1D6] rounded-xl p-3 text-center">
+                                            <img src={b.url} alt="" className="w-full aspect-square object-cover rounded-lg mb-2" />
+                                            <p className="text-xs font-semibold">{b.label}</p>
+                                            <p className="text-[10px] text-[#8A857D]">{b.size}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold mb-3">Copy pronta</h3>
+                                <div className="space-y-3">
+                                    {materials.copy.map((c, i) => (
+                                        <div key={i} className="bg-[#FAF9F5] border border-[#E6E1D6] rounded-xl p-4">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-xs uppercase tracking-wider text-[#8A857D] font-semibold">{c.title}</span>
+                                                <button onClick={() => { navigator.clipboard.writeText(c.text); toast.success("Copiado!"); }} className="text-[#D97757]" data-testid={`copy-text-${i}`}><Copy className="w-4 h-4" /></button>
+                                            </div>
+                                            <p className="text-sm text-[#1A1918]">{c.text}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold mb-3">Hashtags</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {materials.hashtags.map((h, i) => (
+                                        <span key={i} className="bg-[#FDF4F1] text-[#A5472A] border border-[#FBE6DF] px-3 py-1 rounded-full text-xs font-semibold">{h}</span>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </Layout>
+    );
+}

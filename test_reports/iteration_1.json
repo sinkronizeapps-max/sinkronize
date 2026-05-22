@@ -1,0 +1,33 @@
+{
+  "summary": "First-iteration full E2E test for SINKRONIZE. Backend: 27 pytest tests covering apps, auth, affiliations, checkout split, reviews, wallet, materials, notifications, stats. Found and fixed 1 root-cause bug (MongoDB ObjectId in 4 POST responses). Frontend: smoke-tested landing, marketplace, login and producer dashboard via Playwright - all rendered with real seeded data.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Landing", "issues": ["Some Unsplash hero/trust-logos appear as plain text 'loft / ifood / stone / creditas...' rather than brand logos - cosmetic only"]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py is 680 lines mixing models, helpers, auth, apps, sales, stats - consider splitting into routers/ when adding new features",
+    "Several endpoints previously returned the same dict passed to insert_one() which Motor mutates with ObjectId - bug fixed in /auth/register, /affiliations/{app_id}, /checkout, /reviews, /wallet/withdraw by popping _id after insert; recommend adopting pattern: build doc, insert, then return projection from DB or strip _id explicitly to prevent regressions",
+    "Producer dashboard chart x-axis labels read '09/05'..'22/05' (DD/MM) but only the date '22/05' has data because dates use timezone.utc - acceptable but mention timezone handling later",
+    "POST /api/auth/session swallows Emergent token even if create_session would create a duplicate entry; consider idempotent upsert"
+  ],
+  "updated_files": [
+    "/app/backend/server.py (5 _id pops to fix ObjectId serialization)",
+    "/app/backend/tests/backend_test.py (new pytest suite)"
+  ],
+  "success_rate": {"backend": "100% (27/27)", "frontend": "100% smoke (4/4 flows)"},
+  "test_credentials": "producer@sinkronize.com / demo1234 ; afiliado@sinkronize.com / demo1234 (from /app/memory/test_credentials.md - seeded ok)",
+  "seed_data_creation": "Seed runs on startup creating 9 apps + 2 demo users; verified via GET /api/apps and login",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend fully green. Pytest suite at /app/backend/tests/backend_test.py is regression-ready. Frontend deeper testing (register flow with role selection, affiliate dashboard /afiliado, wallet /carteira UI form, checkout /checkout/:slug submission, review submission UI, copy-affiliate-link toast) not exercised - main agent or next tester should verify these UI flows. Google OAuth flow was skipped per instructions.",
+  "rca of the issue": "ROOT CAUSE (FIXED): pymongo/motor's insert_one() mutates the input dict by setting `_id: ObjectId(...)`. Five endpoints (/auth/register, /affiliations/{app_id}, /checkout, /reviews, /wallet/withdraw) returned that same dict directly, so FastAPI's jsonable_encoder hit 'TypeError: ObjectId is not iterable' -> 500. Mitigation applied: doc.pop('_id', None) immediately after each insert_one before returning. Verified by re-running pytest (4 failed -> 27 passed)."
+}
