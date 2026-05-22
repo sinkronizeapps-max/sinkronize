@@ -81,7 +81,7 @@ export default function AppDetail() {
                                     <span className="font-serif-display text-5xl font-semibold text-[#1A1918]">R$ {app.price_monthly.toFixed(2).replace(".", ",")}</span>
                                     <span className="text-[#8A857D]">/mês</span>
                                 </div>
-                                <p className="text-xs text-[#524F4A] mb-6">ou em até <strong>12x de R$ {(app.price_monthly / 12).toFixed(2).replace(".", ",")}</strong> sem juros</p>
+                                <p className="text-xs text-[#524F4A] mb-6">ou em até <strong>12x de R$ {(app.price_monthly / 12).toFixed(2).replace(".", ",")}</strong> sem juros no cartão</p>
                                 <button onClick={() => navigate(`/checkout/${app.slug}`)} className="w-full bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full py-3.5 font-semibold transition-colors mb-3" data-testid="app-subscribe-button">
                                     Assinar agora
                                 </button>

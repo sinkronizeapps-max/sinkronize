@@ -97,7 +97,7 @@ export default function Landing() {
                                 Afiliados que <span className="italic font-light text-[#D97757]">prosperam</span>.
                             </h1>
                             <p className="text-lg lg:text-xl text-[#524F4A] leading-relaxed max-w-2xl mb-10">
-                                A SINKRONIZE está chegando para conectar desenvolvedores de apps de assinatura com uma nova geração de afiliados — comissões automáticas, splits via PIX, comunidade que cresce junto.
+                                A SINKRONIZE está chegando para conectar desenvolvedores de apps de assinatura com uma nova geração de afiliados — divisão automática de comissões, recebimentos rápidos via PIX, comunidade que cresce junto.
                             </p>
                             <div className="flex flex-wrap gap-4">
                                 <Link to="/register" className="inline-flex items-center gap-2 bg-[#D97757] text-white hover:bg-[#C55D3D] rounded-full px-8 py-4 text-base font-semibold transition-all shadow-[0_8px_24px_rgba(217,119,87,0.25)] hover:shadow-[0_12px_32px_rgba(217,119,87,0.35)] hover:-translate-y-0.5" data-testid="hero-cta-primary">
@@ -253,9 +253,9 @@ export default function Landing() {
                         </div>
                         <div className="space-y-5">
                             {[
-                                { t: "Split automático", d: "Produtor, afiliado e plataforma recebem cada um na sua proporção, sem intervenção manual." },
+                                { t: "Split automático", d: "Cada venda é dividida na hora entre produtor, afiliado e plataforma, sem intervenção manual." },
                                 { t: "Taxa fixa 9,9%", d: "Sem mensalidade. Sem letras miúdas. Você só paga quando vende." },
-                                { t: "PIX integrado", d: "Saques diretamente para sua chave PIX cadastrada." },
+                                { t: "PIX integrado", d: "Saques caem direto na sua chave PIX cadastrada." },
                                 { t: "Tracking de afiliados", d: "Cada afiliado tem código único com rastreamento de cliques, conversões e ticket médio." },
                                 { t: "Materiais prontos", d: "Banners, copy e hashtags geradas automaticamente para cada app." },
                             ].map((s, i) => (
