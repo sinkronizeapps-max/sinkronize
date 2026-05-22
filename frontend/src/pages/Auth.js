@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 
-const LOGO = "https://customer-assets.emergentagent.com/job_ffca4835-3ac6-4a72-8a6d-7c6ccc5f62ae/artifacts/fsn7ciz3_LOGO.jpeg";
+const LOGO = "https://customer-assets.emergentagent.com/job_affiliate-hub-v1/artifacts/akcndvhv_L.png";
 
 // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
 const handleGoogle = () => {

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Instagram, Twitter, Youtube, Linkedin } from "lucide-react";
 
-const LOGO = "https://customer-assets.emergentagent.com/job_ffca4835-3ac6-4a72-8a6d-7c6ccc5f62ae/artifacts/fsn7ciz3_LOGO.jpeg";
+const LOGO = "https://customer-assets.emergentagent.com/job_affiliate-hub-v1/artifacts/akcndvhv_L.png";
 
 export const Footer = () => (
     <footer className="bg-[#1A1918] text-[#E6E1D6] mt-32">
