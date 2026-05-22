@@ -4,10 +4,16 @@ import api from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Plus, TrendingUp, DollarSign, Package, ShoppingBag, X, Megaphone, Copy } from "lucide-react";
+import { Plus, TrendingUp, DollarSign, Package, ShoppingBag, X, Megaphone, Copy, Crown, Zap, Check } from "lucide-react";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 const CATS = ["Bem-estar", "Produtividade", "Fitness", "Finanças", "Culinária", "Educação", "Pets", "Negócios"];
+
+const TIER_META = {
+    basico: { label: "Básico", color: "#524F4A", bg: "#F5F0E8", icon: null },
+    plus: { label: "Plus", color: "#1E4D7B", bg: "#D9E8F6", icon: Zap },
+    premium: { label: "Premium", color: "#8A5A0A", bg: "#FBE9C4", icon: Crown },
+};
 
 export default function ProducerDashboard() {
     const { user, loading } = useAuth();
@@ -18,6 +24,8 @@ export default function ProducerDashboard() {
     const [showCreate, setShowCreate] = useState(false);
     const [showMaterials, setShowMaterials] = useState(null);
     const [materials, setMaterials] = useState(null);
+    const [showUpgrade, setShowUpgrade] = useState(null);
+    const [tiers, setTiers] = useState([]);
     const [form, setForm] = useState({
         name: "", tagline: "", description: "", category: "Produtividade",
         price_monthly: 29.9, commission_pct: 40,
@@ -32,8 +40,19 @@ export default function ProducerDashboard() {
             api.get("/stats/producer").then((r) => setStats(r.data)),
             api.get("/my/apps").then((r) => setApps(r.data)),
             api.get("/my/sales").then((r) => setSales(r.data)),
+            api.get("/tiers").then((r) => setTiers(r.data)),
         ]);
     }, [user, loading, navigate]);
+
+    const upgradeTo = async (tier) => {
+        try {
+            await api.post(`/apps/${showUpgrade.app_id}/upgrade`, { tier });
+            toast.success(`App atualizado para ${tier === "basico" ? "Básico" : tier === "plus" ? "Plus" : "Premium"}!`);
+            setShowUpgrade(null);
+            const r = await api.get("/my/apps");
+            setApps(r.data);
+        } catch (_e) { toast.error("Erro ao atualizar plano"); }
+    };
 
     const create = async (e) => {
         e.preventDefault();
@@ -122,12 +141,19 @@ export default function ProducerDashboard() {
                         <p className="text-sm text-[#8A857D] py-8 text-center">Você ainda não publicou nenhum app. Clique em "Publicar novo app" para começar.</p>
                     ) : (
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {apps.map((a) => (
+                            {apps.map((a) => {
+                                const meta = TIER_META[a.tier || "basico"];
+                                return (
                                 <div key={a.app_id} className="border border-[#E6E1D6] rounded-2xl p-4">
                                     <div className="flex items-center gap-3 mb-3">
                                         <img src={a.icon_url} alt="" className="w-12 h-12 rounded-xl object-cover" />
-                                        <div className="flex-1">
-                                            <div className="font-semibold">{a.name}</div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                                <div className="font-semibold truncate">{a.name}</div>
+                                                <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full font-bold" style={{ background: meta.bg, color: meta.color }}>
+                                                    {meta.icon && <meta.icon className="w-2.5 h-2.5" />} {meta.label}
+                                                </span>
+                                            </div>
                                             <div className="text-xs text-[#8A857D]">{a.category} · {a.commission_pct}% comissão</div>
                                         </div>
                                     </div>
@@ -135,11 +161,17 @@ export default function ProducerDashboard() {
                                         <div>Assinantes: <strong>{a.subscribers}</strong></div>
                                         <div>Preço: <strong>R$ {a.price_monthly.toFixed(2)}</strong></div>
                                     </div>
-                                    <button onClick={() => openMaterials(a)} className="w-full text-xs bg-[#FDF4F1] text-[#A5472A] border border-[#FBE6DF] rounded-full py-2 font-semibold hover:bg-[#FBE6DF] flex items-center justify-center gap-1.5" data-testid={`materials-${a.app_id}`}>
-                                        <Megaphone className="w-3 h-3" /> Materiais de divulgação
-                                    </button>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <button onClick={() => openMaterials(a)} className="text-xs bg-[#FDF4F1] text-[#A5472A] border border-[#FBE6DF] rounded-full py-2 font-semibold hover:bg-[#FBE6DF] flex items-center justify-center gap-1.5" data-testid={`materials-${a.app_id}`}>
+                                            <Megaphone className="w-3 h-3" /> Materiais
+                                        </button>
+                                        <button onClick={() => setShowUpgrade(a)} className="text-xs bg-[#1A1918] text-white rounded-full py-2 font-semibold hover:bg-[#2A2825] flex items-center justify-center gap-1.5" data-testid={`upgrade-${a.app_id}`}>
+                                            <Crown className="w-3 h-3" /> Plano
+                                        </button>
+                                    </div>
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>
@@ -219,6 +251,47 @@ export default function ProducerDashboard() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
+            {showUpgrade && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowUpgrade(null)}>
+                    <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-3xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto" data-testid="upgrade-modal">
+                        <div className="flex justify-between items-start mb-6">
+                            <div>
+                                <h2 className="font-serif-display text-2xl font-semibold">Plano do app — {showUpgrade.name}</h2>
+                                <p className="text-sm text-[#524F4A]">Escolha um plano para destacar seu app. Cobrança real será ativada com o Stripe.</p>
+                            </div>
+                            <button onClick={() => setShowUpgrade(null)}><X className="w-5 h-5" /></button>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-4">
+                            {tiers.map((t) => {
+                                const current = (showUpgrade.tier || "basico") === t.id;
+                                const isPremium = t.id === "premium";
+                                return (
+                                    <div key={t.id} className={`relative rounded-2xl p-6 border-2 ${current ? "border-[#D97757]" : isPremium ? "border-[#E8C97A] bg-[#FBE9C4]/30" : "border-[#E6E1D6]"}`}>
+                                        {isPremium && <Crown className="w-5 h-5 text-[#8A5A0A] absolute top-4 right-4" />}
+                                        {t.id === "plus" && <Zap className="w-5 h-5 text-[#1E4D7B] absolute top-4 right-4" />}
+                                        <h3 className="font-serif-display text-2xl font-semibold mb-1">{t.name}</h3>
+                                        <div className="flex items-baseline gap-1 mb-4">
+                                            <span className="font-serif-display text-4xl font-semibold">R$ {t.price}</span>
+                                            <span className="text-xs text-[#8A857D]">/mês</span>
+                                        </div>
+                                        <ul className="space-y-2 mb-6 text-sm text-[#524F4A]">
+                                            {t.perks.map((p, i) => <li key={i} className="flex items-start gap-2"><Check className="w-4 h-4 text-[#2D7A5C] mt-0.5 shrink-0" /> {p}</li>)}
+                                        </ul>
+                                        {current ? (
+                                            <button disabled className="w-full bg-[#F5F0E8] text-[#524F4A] rounded-full py-2.5 text-sm font-semibold cursor-default" data-testid={`tier-current-${t.id}`}>Plano atual</button>
+                                        ) : (
+                                            <button onClick={() => upgradeTo(t.id)} className={`w-full rounded-full py-2.5 text-sm font-semibold transition-colors ${isPremium ? "bg-[#8A5A0A] hover:bg-[#6B4408] text-white" : t.id === "plus" ? "bg-[#1E4D7B] hover:bg-[#163A5C] text-white" : "bg-white border border-[#E6E1D6] hover:border-[#D97757] text-[#1A1918]"}`} data-testid={`tier-select-${t.id}`}>
+                                                Escolher {t.name}
+                                            </button>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <p className="text-xs text-[#8A857D] text-center mt-6">Cobrança recorrente via Stripe será ativada em breve. Por enquanto a troca de plano é livre.</p>
                     </div>
                 </div>
             )}

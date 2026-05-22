@@ -1,13 +1,22 @@
 import { Link } from "react-router-dom";
-import { Star, TrendingUp } from "lucide-react";
+import { Star, TrendingUp, Crown, Zap } from "lucide-react";
 
-export const AppCard = ({ app }) => (
+const TIER_BADGE = {
+    premium: { label: "PREMIUM", bg: "#FBE9C4", text: "#8A5A0A", border: "#E8C97A", icon: Crown },
+    plus: { label: "PLUS", bg: "#D9E8F6", text: "#1E4D7B", border: "#A8C7E0", icon: Zap },
+};
+
+export const AppCard = ({ app }) => {
+    const tier = app.tier && app.tier !== "basico" ? TIER_BADGE[app.tier] : null;
+    return (
     <Link to={`/app/${app.slug}`} className="group block" data-testid={`app-card-${app.slug}`}>
-        <div className="bg-white border border-[#E6E1D6] rounded-2xl overflow-hidden hover:border-[#D97757]/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_36px_rgba(217,119,87,0.12)]">
+        <div className={`bg-white border rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 ${app.tier === "premium" ? "border-[#E8C97A] hover:border-[#D4A946] hover:shadow-[0_12px_36px_rgba(212,169,70,0.18)]" : "border-[#E6E1D6] hover:border-[#D97757]/40 hover:shadow-[0_12px_36px_rgba(217,119,87,0.12)]"}`}>
             <div className="relative aspect-[5/3] overflow-hidden bg-[#F5F0E8]">
                 <img src={app.icon_url || app.cover_url} alt={app.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                {app.featured && (
-                    <span className="absolute top-3 left-3 bg-[#1A1918] text-white text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-semibold">Em alta</span>
+                {tier && (
+                    <span className="absolute top-3 left-3 inline-flex items-center gap-1 text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-bold" style={{ background: tier.bg, color: tier.text, border: `1px solid ${tier.border}` }} data-testid={`tier-badge-${app.tier}`}>
+                        <tier.icon className="w-3 h-3" /> {tier.label}
+                    </span>
                 )}
                 <span className="absolute top-3 right-3 bg-white/95 backdrop-blur text-[#A5472A] text-xs px-2.5 py-1 rounded-full font-bold flex items-center gap-1">
                     <TrendingUp className="w-3 h-3" /> {app.commission_pct}%
@@ -34,3 +43,4 @@ export const AppCard = ({ app }) => (
         </div>
     </Link>
 );
+};

@@ -82,6 +82,9 @@ class AppCreateIn(BaseModel):
     icon_url: Optional[str] = None
     cover_url: Optional[str] = None
 
+class TierUpgradeIn(BaseModel):
+    tier: Literal["basico", "plus", "premium"]
+
 class Affiliation(BaseModel):
     affiliation_id: str
     code: str
@@ -152,6 +155,8 @@ class CheckoutIn(BaseModel):
 
 # ============================ HELPERS ============================
 PLATFORM_FEE_PCT = 9.9  # SINKRONIZE platform fee
+TIER_PRICES = {"basico": 0.0, "plus": 49.0, "premium": 119.0}
+TIER_RANK = {"basico": 0, "plus": 1, "premium": 2}
 
 def hash_password(pw: str) -> str:
     return bcrypt.hashpw(pw.encode(), bcrypt.gensalt()).decode()
@@ -316,12 +321,14 @@ async def list_apps(category: Optional[str] = None, q: Optional[str] = None, sor
             {"tagline": {"$regex": q, "$options": "i"}},
             {"description": {"$regex": q, "$options": "i"}},
         ]
-    sort_field = {"featured": ("featured", -1), "rating": ("rating", -1), "new": ("created_at", -1), "commission": ("commission_pct", -1)}.get(sort, ("featured", -1))
-    cursor = db.apps.find(query, {"_id": 0}).sort([sort_field, ("rating", -1)]).limit(200)
+    # Sort: premium > plus > basico for "featured"; otherwise the requested order, but tier still wins as tiebreaker
+    sort_field = {"featured": ("tier_rank", -1), "rating": ("rating", -1), "new": ("created_at", -1), "commission": ("commission_pct", -1)}.get(sort, ("tier_rank", -1))
+    cursor = db.apps.find(query, {"_id": 0}).sort([sort_field, ("tier_rank", -1), ("rating", -1)]).limit(200)
     items = await cursor.to_list(200)
     for it in items:
         if isinstance(it.get("created_at"), str):
             it["created_at"] = datetime.fromisoformat(it["created_at"])
+        it.setdefault("tier", "basico")
     return items
 
 @api_router.get("/apps/categories")
@@ -351,12 +358,37 @@ async def create_app(payload: AppCreateIn, user: dict = Depends(get_current_user
         "app_id": app_id, "slug": slug, **payload.model_dump(),
         "producer_id": user["user_id"], "producer_name": user["name"],
         "rating": 0.0, "reviews_count": 0, "subscribers": 0, "featured": False,
+        "tier": "basico", "tier_rank": 0,
         "created_at": now.isoformat(),
     }
     await db.apps.insert_one(doc)
-    doc["created_at"] = now
     doc.pop("_id", None)
+    doc["created_at"] = now
     return doc
+
+@api_router.post("/apps/{app_id}/upgrade")
+async def upgrade_app_tier(app_id: str, payload: TierUpgradeIn, user: dict = Depends(get_current_user)):
+    """Upgrade app tier — MOCKED billing for now. Will plug Stripe subscription when keys are provided."""
+    a = await db.apps.find_one({"app_id": app_id, "producer_id": user["user_id"]}, {"_id": 0})
+    if not a:
+        raise HTTPException(status_code=404, detail="App não encontrado")
+    await db.apps.update_one(
+        {"app_id": app_id},
+        {"$set": {
+            "tier": payload.tier,
+            "tier_rank": TIER_RANK[payload.tier],
+            "featured": payload.tier == "premium",
+        }},
+    )
+    return {"ok": True, "tier": payload.tier, "monthly_cost": TIER_PRICES[payload.tier]}
+
+@api_router.get("/tiers")
+async def list_tiers():
+    return [
+        {"id": "basico", "name": "Básico", "price": 0, "perks": ["Listagem padrão no marketplace", "Acesso ao programa de afiliados", "Materiais de divulgação básicos"]},
+        {"id": "plus", "name": "Plus", "price": 49, "perks": ["Selo PLUS no card", "Prioridade na ordenação", "Materiais avançados", "Suporte prioritário"]},
+        {"id": "premium", "name": "Premium", "price": 119, "perks": ["Selo dourado PREMIUM", "Topo do marketplace", "Destaque na home", "Banners personalizados", "Suporte VIP"]},
+    ]
 
 @api_router.get("/my/apps")
 async def my_apps(user: dict = Depends(get_current_user)):
@@ -649,6 +681,8 @@ async def seed_data():
     ]
     for i, s in enumerate(apps_seed):
         app_id = f"app_seed{i:03d}"
+        # Distribute tiers for visual demo: first 2 premium, next 3 plus, rest basico
+        tier = "premium" if i < 2 else ("plus" if i < 5 else "basico")
         await db.apps.insert_one({
             "app_id": app_id, "slug": slugify(s["name"]) + f"-{i}",
             "name": s["name"], "tagline": s["tagline"],
@@ -659,7 +693,8 @@ async def seed_data():
             "cover_url": s["icon"],
             "producer_id": producer_id, "producer_name": "Studio Nova",
             "rating": round(4.2 + (i % 8) * 0.1, 1), "reviews_count": 40 + i * 23,
-            "subscribers": 1200 + i * 480, "featured": i < 4,
+            "subscribers": 1200 + i * 480, "featured": tier == "premium",
+            "tier": tier, "tier_rank": TIER_RANK[tier],
             "created_at": (now - timedelta(days=i * 3)).isoformat(),
         })
     logger.info("Seed completed.")

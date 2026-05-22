@@ -14,19 +14,19 @@ export const Header = () => {
     return (
         <header className="fixed top-0 inset-x-0 z-50 bg-[#FAF9F5]/85 backdrop-blur-xl border-b border-[#E6E1D6]">
             <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 h-16 flex items-center justify-between">
-                <Link to="/" className="flex items-center gap-3 group" data-testid="header-logo-link">
+                <Link to="/" className="flex items-center gap-3 group shrink-0" data-testid="header-logo-link">
                     <img src={LOGO} alt="SINKRONIZE" className="w-10 h-10 rounded-xl object-cover ring-1 ring-[#E6E1D6]" />
-                    <span className="font-serif-display text-xl font-semibold tracking-tight text-[#1A1918]">SINKRONIZE</span>
+                    <span className="hidden lg:inline font-serif-display text-xl font-semibold tracking-tight text-[#1A1918]">SINKRONIZE</span>
                 </Link>
 
-                <nav className="hidden md:flex items-center gap-8">
-                    <Link to="/marketplace" className="text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors" data-testid="nav-marketplace">Marketplace</Link>
-                    <Link to="/produtores" className="text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors" data-testid="nav-producers">Para Produtores</Link>
-                    <Link to="/afiliados" className="text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors" data-testid="nav-affiliates">Para Afiliados</Link>
-                    <a href="#como-funciona" className="text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors" data-testid="nav-how">Como funciona</a>
+                <nav className="hidden md:flex items-center gap-5 lg:gap-7 mx-4">
+                    <Link to="/marketplace" className="text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors whitespace-nowrap" data-testid="nav-marketplace">Marketplace</Link>
+                    <Link to="/produtores" className="text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors whitespace-nowrap" data-testid="nav-producers">Produtores</Link>
+                    <Link to="/afiliados" className="text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors whitespace-nowrap" data-testid="nav-affiliates">Afiliados</Link>
+                    <a href="/#como-funciona" className="hidden lg:inline text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors whitespace-nowrap" data-testid="nav-how">Como funciona</a>
                 </nav>
 
-                <div className="hidden md:flex items-center gap-3">
+                <div className="hidden md:flex items-center gap-3 shrink-0">
                     {user ? (
                         <div className="relative">
                             <button onClick={() => setMenu(!menu)} className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#E6E1D6] hover:border-[#D97757] transition-colors" data-testid="header-user-menu">
