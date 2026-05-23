@@ -10,7 +10,7 @@ import { supabase } from "../lib/supabase";
 const handleGoogle = async () => {
     await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: window.location.origin + '/dashboard' }
+        options: { redirectTo: window.location.origin + '/bem-vindo' }
     });
 };
 
@@ -21,7 +21,7 @@ export function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    const redirectTo = location.state?.from || "/dashboard";
+    const redirectTo = location.state?.from || "/bem-vindo";
 
     const submit = async (e) => {
         e.preventDefault();

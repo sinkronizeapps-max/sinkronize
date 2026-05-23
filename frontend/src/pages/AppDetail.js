@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { appsAPI, affiliationsAPI, reviewsAPI } from "../lib/api";
+import { appsAPI, reviewsAPI } from "../lib/api";
 import { Layout } from "../components/Layout";
-import { Star, TrendingUp, Users, Check, Link2, Copy } from "lucide-react";
+import { Star, TrendingUp, Users, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
 
@@ -12,7 +12,6 @@ export default function AppDetail() {
     const { user } = useAuth();
     const [app, setApp] = useState(null);
     const [reviews, setReviews] = useState([]);
-    const [aff, setAff] = useState(null);
     const [newReview, setNewReview] = useState({ rating: 5, comment: "" });
 
     useEffect(() => {
@@ -21,21 +20,6 @@ export default function AppDetail() {
             reviewsAPI.list(appData.id).then(setReviews).catch(() => {});
         }).catch(() => {});
     }, [slug]);
-
-    const becomeAffiliate = async () => {
-        if (!user) { navigate("/login"); return; }
-        if (app.is_demo) {
-            toast.warning("As afiliações para este app estão pausadas pelo produtor.");
-            return;
-        }
-        try {
-            const r = await affiliationsAPI.create(app.id);
-            setAff(r);
-            toast.success("Você agora é afiliado deste app!");
-        } catch (e) {
-            toast.error("Erro ao virar afiliado");
-        }
-    };
 
     const submitReview = async (e) => {
         e.preventDefault();
@@ -47,12 +31,6 @@ export default function AppDetail() {
             setNewReview({ rating: 5, comment: "" });
             toast.success("Avaliação enviada!");
         } catch (_e) { toast.error("Erro ao enviar avaliação"); }
-    };
-
-    const copyLink = () => {
-        const link = `${window.location.origin}/app/${app.slug}?ref=${aff.code}`;
-        navigator.clipboard.writeText(link);
-        toast.success("Link copiado!");
     };
 
     if (!app) return <Layout><div className="min-h-[60vh] flex items-center justify-center text-[#8A857D]">Carregando...</div></Layout>;
@@ -89,23 +67,10 @@ export default function AppDetail() {
                                 <button onClick={() => navigate(`/checkout/${app.slug}`)} className="w-full bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full py-3.5 font-semibold transition-colors mb-3" data-testid="app-subscribe-button">
                                     Assinar agora
                                 </button>
-                                {!aff ? (
-                                    <button onClick={becomeAffiliate} className="w-full bg-white border border-[#E6E1D6] hover:border-[#D97757] hover:text-[#D97757] rounded-full py-3.5 font-semibold transition-colors flex items-center justify-center gap-2" data-testid="app-affiliate-button">
-                                        <Link2 className="w-4 h-4" /> Quero ser afiliado
-                                    </button>
-                                ) : (
-                                    <div className="bg-[#FDF4F1] border border-[#FBE6DF] rounded-2xl p-4">
-                                        <p className="text-xs uppercase tracking-wider text-[#A5472A] font-semibold mb-2 flex items-center gap-1"><Check className="w-3 h-3" /> Você é afiliado</p>
-                                        <div className="flex items-center gap-2 bg-white border border-[#E6E1D6] rounded-lg p-2">
-                                            <code className="flex-1 text-xs text-[#1A1918] truncate">/app/{app.slug}?ref={aff.code}</code>
-                                            <button onClick={copyLink} className="p-1.5 rounded hover:bg-[#F5F0E8]" data-testid="copy-affiliate-link"><Copy className="w-4 h-4 text-[#524F4A]" /></button>
-                                        </div>
-                                    </div>
-                                )}
                                 <div className="mt-6 pt-6 border-t border-[#E6E1D6] space-y-2 text-sm text-[#524F4A]">
+                                    <p className="flex items-center gap-2"><Check className="w-4 h-4 text-[#2D7A5C]" />Acesso imediato após o pagamento</p>
                                     <p className="flex items-center gap-2"><Check className="w-4 h-4 text-[#2D7A5C]" />Cancele quando quiser</p>
-                                    <p className="flex items-center gap-2"><Check className="w-4 h-4 text-[#2D7A5C]" />Comissões recorrentes para afiliados</p>
-                                    <p className="flex items-center gap-2"><Check className="w-4 h-4 text-[#2D7A5C]" />Materiais de divulgação prontos</p>
+                                    <p className="flex items-center gap-2"><Check className="w-4 h-4 text-[#2D7A5C]" />Suporte incluso</p>
                                 </div>
                             </div>
                             <div className="mt-6 text-center text-sm text-[#524F4A]">Por <Link to="#" className="font-semibold text-[#1A1918]">{app.producer_name}</Link></div>

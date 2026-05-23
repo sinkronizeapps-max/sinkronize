@@ -10,6 +10,8 @@ import AffiliateDashboard from "./pages/AffiliateDashboard";
 import Wallet from "./pages/Wallet";
 import Checkout from "./pages/Checkout";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
+import Welcome from "./pages/Welcome";
+import MinhasCompras from "./pages/MinhasCompras";
 import { ForProducers, ForAffiliates } from "./pages/Info";
 import "./App.css";
 
@@ -30,6 +32,8 @@ function AppRouter() {
             <Route path="/dashboard" element={<ProducerDashboard />} />
             <Route path="/afiliado" element={<AffiliateDashboard />} />
             <Route path="/checkout/:slug/sucesso" element={<CheckoutSuccess />} />
+            <Route path="/bem-vindo" element={<Welcome />} />
+            <Route path="/minhas-compras" element={<MinhasCompras />} />
             <Route path="/carteira" element={<Wallet />} />
             <Route path="/produtores" element={<ForProducers />} />
             <Route path="/afiliados" element={<ForAffiliates />} />
