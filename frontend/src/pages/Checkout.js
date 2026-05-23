@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import api from "../lib/api";
+import { appsAPI, salesAPI } from "../lib/api";
 import { Layout } from "../components/Layout";
 import { Lock, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -18,14 +18,20 @@ export default function Checkout() {
     });
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => { api.get(`/apps/${slug}`).then((r) => setApp(r.data)); }, [slug]);
+    useEffect(() => { appsAPI.getBySlug(slug).then(setApp).catch(() => {}); }, [slug]);
 
     const submit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const r = await api.post("/checkout", { ...form, app_id: app.app_id });
-            setDone(r.data);
+            const r = await salesAPI.checkout({
+                appId: app.id,
+                buyerEmail: form.buyer_email,
+                buyerName: form.buyer_name,
+                affiliationCode: form.affiliation_code || null,
+                installments: form.installments
+            });
+            setDone(r);
         } catch (_err) {
             toast.error("Erro ao processar pagamento");
         } finally { setLoading(false); }

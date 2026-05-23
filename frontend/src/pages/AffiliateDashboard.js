@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Layout } from "../components/Layout";
-import api from "../lib/api";
+import { statsAPI, affiliationsAPI, salesAPI } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { Award, MousePointerClick, ShoppingBag, TrendingUp, Copy, ExternalLink } from "lucide-react";
@@ -24,9 +24,9 @@ export default function AffiliateDashboard() {
         if (loading) return;
         if (!user) { navigate("/login", { state: { from: "/afiliado" } }); return; }
         Promise.all([
-            api.get("/stats/affiliate").then((r) => setStats(r.data)),
-            api.get("/my/affiliations").then((r) => setAff(r.data)),
-            api.get("/my/commissions").then((r) => setComms(r.data)),
+            statsAPI.affiliate().then(setStats).catch(() => {}),
+            affiliationsAPI.myAffiliations().then(setAff).catch(() => {}),
+            salesAPI.myCommissions().then(setComms).catch(() => {}),
         ]);
     }, [user, loading, navigate]);
 

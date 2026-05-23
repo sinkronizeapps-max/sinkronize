@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import api from "../lib/api";
+import { appsAPI } from "../lib/api";
 import { Layout } from "../components/Layout";
 import { AppCard } from "../components/AppCard";
 import { ArrowRight, Sparkles, Users, TrendingUp, ShieldCheck, Zap, Award, ChartBar, Wallet, Megaphone, Calculator } from "lucide-react";
@@ -77,7 +77,7 @@ function EarningsCalculator() {
 export default function Landing() {
     const [apps, setApps] = useState([]);
     useEffect(() => {
-        api.get("/apps?sort=featured").then((r) => setApps(r.data.slice(0, 8))).catch(() => {});
+        appsAPI.list({ sort: 'featured' }).then((data) => setApps(data.slice(0, 8))).catch(() => {});
     }, []);
 
     return (

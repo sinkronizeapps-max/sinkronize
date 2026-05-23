@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Layout } from "../components/Layout";
-import api from "../lib/api";
+import { statsAPI, appsAPI, salesAPI, materialsAPI } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -37,38 +37,35 @@ export default function ProducerDashboard() {
         if (loading) return;
         if (!user) { navigate("/login", { state: { from: "/dashboard" } }); return; }
         Promise.all([
-            api.get("/stats/producer").then((r) => setStats(r.data)),
-            api.get("/my/apps").then((r) => setApps(r.data)),
-            api.get("/my/sales").then((r) => setSales(r.data)),
-            api.get("/tiers").then((r) => setTiers(r.data)),
+            statsAPI.producer().then(setStats).catch(() => {}),
+            appsAPI.myApps().then(setApps).catch(() => {}),
+            salesAPI.mySales().then(setSales).catch(() => {}),
+            Promise.resolve(appsAPI.tiers()).then(setTiers),
         ]);
     }, [user, loading, navigate]);
 
     const upgradeTo = async (tier) => {
         try {
-            await api.post(`/apps/${showUpgrade.app_id}/upgrade`, { tier });
+            await appsAPI.upgradeTier(showUpgrade.id, tier);
             toast.success(`App atualizado para ${tier === "basico" ? "Básico" : tier === "plus" ? "Plus" : "Premium"}!`);
             setShowUpgrade(null);
-            const r = await api.get("/my/apps");
-            setApps(r.data);
+            appsAPI.myApps().then(setApps);
         } catch (_e) { toast.error("Erro ao atualizar plano"); }
     };
 
     const create = async (e) => {
         e.preventDefault();
         try {
-            await api.post("/apps", form);
+            await appsAPI.create(form);
             toast.success("App publicado!");
             setShowCreate(false);
-            const r = await api.get("/my/apps");
-            setApps(r.data);
+            appsAPI.myApps().then(setApps);
         } catch (_e) { toast.error("Erro ao publicar app"); }
     };
 
     const openMaterials = async (app) => {
         setShowMaterials(app);
-        const r = await api.get(`/materials/${app.app_id}`);
-        setMaterials(r.data);
+        materialsAPI.get(app.id).then(setMaterials).catch(() => {});
     };
 
     if (loading || !user) return <Layout><div className="min-h-screen flex items-center justify-center">Carregando...</div></Layout>;
@@ -144,7 +141,7 @@ export default function ProducerDashboard() {
                             {apps.map((a) => {
                                 const meta = TIER_META[a.tier || "basico"];
                                 return (
-                                <div key={a.app_id} className="border border-[#E6E1D6] rounded-2xl p-4">
+                                <div key={a.id} className="border border-[#E6E1D6] rounded-2xl p-4">
                                     <div className="flex items-center gap-3 mb-3">
                                         <img src={a.icon_url} alt="" className="w-12 h-12 rounded-xl object-cover" />
                                         <div className="flex-1 min-w-0">
@@ -162,10 +159,10 @@ export default function ProducerDashboard() {
                                         <div>Preço: <strong>R$ {a.price_monthly.toFixed(2)}</strong></div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
-                                        <button onClick={() => openMaterials(a)} className="text-xs bg-[#FDF4F1] text-[#A5472A] border border-[#FBE6DF] rounded-full py-2 font-semibold hover:bg-[#FBE6DF] flex items-center justify-center gap-1.5" data-testid={`materials-${a.app_id}`}>
+                                        <button onClick={() => openMaterials(a)} className="text-xs bg-[#FDF4F1] text-[#A5472A] border border-[#FBE6DF] rounded-full py-2 font-semibold hover:bg-[#FBE6DF] flex items-center justify-center gap-1.5" data-testid={`materials-${a.id}`}>
                                             <Megaphone className="w-3 h-3" /> Materiais
                                         </button>
-                                        <button onClick={() => setShowUpgrade(a)} className="text-xs bg-[#1A1918] text-white rounded-full py-2 font-semibold hover:bg-[#2A2825] flex items-center justify-center gap-1.5" data-testid={`upgrade-${a.app_id}`}>
+                                        <button onClick={() => setShowUpgrade(a)} className="text-xs bg-[#1A1918] text-white rounded-full py-2 font-semibold hover:bg-[#2A2825] flex items-center justify-center gap-1.5" data-testid={`upgrade-${a.id}`}>
                                             <Crown className="w-3 h-3" /> Plano
                                         </button>
                                     </div>

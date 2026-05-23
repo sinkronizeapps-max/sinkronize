@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 
 const LOGO = "https://customer-assets.emergentagent.com/job_affiliate-hub-v1/artifacts/gx74436b_L1.png";
 
-// REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
-const handleGoogle = () => {
-    const redirectUrl = window.location.origin + "/dashboard";
-    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+import { supabase } from "../lib/supabase";
+
+const handleGoogle = async () => {
+    await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.origin + '/dashboard' }
+    });
 };
 
 export function Login() {
@@ -28,7 +31,7 @@ export function Login() {
             toast.success("Bem-vindo de volta!");
             navigate(redirectTo);
         } catch (err) {
-            toast.error(err.response?.data?.detail || "Erro ao entrar");
+            toast.error(err.message || "Erro ao entrar");
         } finally {
             setLoading(false);
         }
@@ -108,7 +111,7 @@ export function Register() {
             toast.success("Conta criada com sucesso!");
             navigate("/dashboard");
         } catch (err) {
-            toast.error(err.response?.data?.detail || "Erro ao criar conta");
+            toast.error(err.message || "Erro ao criar conta");
         } finally {
             setLoading(false);
         }
@@ -194,41 +197,18 @@ export function Register() {
 
 export function AuthCallback() {
     const navigate = useNavigate();
-    const { setUser } = useAuth();
-    const [error, setError] = useState(null);
-
-    useState(() => null);
-    const hash = window.location.hash || "";
-    const match = hash.match(/session_id=([^&]+)/);
-    const sessionId = match ? match[1] : null;
-
-    if (!sessionId) {
-        return <div className="min-h-screen flex items-center justify-center bg-[#FAF9F5]"><p>Sessão inválida</p></div>;
-    }
-
-    // Process synchronously on first render
-    if (typeof window !== "undefined" && !window.__sk_auth_processed) {
-        window.__sk_auth_processed = true;
-        import("../lib/api").then(({ default: api }) => {
-            api.post("/auth/session", { session_id: sessionId })
-                .then((r) => {
-                    if (r.data.token) localStorage.setItem("sk_token", r.data.token);
-                    setUser(r.data.user);
-                    // clean hash
-                    window.history.replaceState({}, "", "/dashboard");
-                    navigate("/dashboard", { replace: true, state: { user: r.data.user } });
-                })
-                .catch(() => {
-                    setError("Falha ao autenticar");
-                });
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) navigate('/dashboard', { replace: true });
+            else navigate('/login', { replace: true });
         });
-    }
+    }, [navigate]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#FAF9F5]">
             <div className="text-center">
                 <div className="w-12 h-12 border-4 border-[#D97757] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                <p className="text-[#524F4A]">{error || "Sincronizando sua sessão..."}</p>
+                <p className="text-[#524F4A]">Sincronizando sua sessão...</p>
             </div>
         </div>
     );

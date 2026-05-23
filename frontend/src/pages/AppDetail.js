@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import api from "../lib/api";
+import { appsAPI, affiliationsAPI, reviewsAPI } from "../lib/api";
 import { Layout } from "../components/Layout";
 import { Star, TrendingUp, Users, Check, Link2, Copy } from "lucide-react";
 import { toast } from "sonner";
@@ -16,17 +16,17 @@ export default function AppDetail() {
     const [newReview, setNewReview] = useState({ rating: 5, comment: "" });
 
     useEffect(() => {
-        api.get(`/apps/${slug}`).then((r) => {
-            setApp(r.data);
-            api.get(`/reviews/${r.data.app_id}`).then((rr) => setReviews(rr.data));
+        appsAPI.getBySlug(slug).then((appData) => {
+            setApp(appData);
+            reviewsAPI.list(appData.id).then(setReviews).catch(() => {});
         }).catch(() => {});
     }, [slug]);
 
     const becomeAffiliate = async () => {
         if (!user) { navigate("/login"); return; }
         try {
-            const r = await api.post(`/affiliations/${app.app_id}`);
-            setAff(r.data);
+            const r = await affiliationsAPI.create(app.id);
+            setAff(r);
             toast.success("Você agora é afiliado deste app!");
         } catch (e) {
             toast.error("Erro ao virar afiliado");
@@ -37,9 +37,9 @@ export default function AppDetail() {
         e.preventDefault();
         if (!user) { navigate("/login"); return; }
         try {
-            await api.post("/reviews", { app_id: app.app_id, rating: newReview.rating, comment: newReview.comment });
-            const rr = await api.get(`/reviews/${app.app_id}`);
-            setReviews(rr.data);
+            await reviewsAPI.add({ appId: app.id, rating: newReview.rating, comment: newReview.comment });
+            const rr = await reviewsAPI.list(app.id);
+            setReviews(rr);
             setNewReview({ rating: 5, comment: "" });
             toast.success("Avaliação enviada!");
         } catch (_e) { toast.error("Erro ao enviar avaliação"); }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../lib/api";
+import { appsAPI } from "../lib/api";
 import { Layout } from "../components/Layout";
 import { AppCard } from "../components/AppCard";
 import { Search } from "lucide-react";
@@ -14,7 +14,7 @@ export default function Marketplace() {
 
     useEffect(() => {
         const t = setTimeout(() => {
-            api.get(`/apps?category=${cat}&q=${encodeURIComponent(q)}&sort=${sort}`).then((r) => setApps(r.data));
+            appsAPI.list({ category: cat, q, sort }).then(setApps).catch(() => {});
         }, 200);
         return () => clearTimeout(t);
     }, [cat, q, sort]);

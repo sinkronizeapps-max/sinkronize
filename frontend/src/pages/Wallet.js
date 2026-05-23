@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Layout } from "../components/Layout";
-import api from "../lib/api";
+import { walletAPI } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -14,7 +14,7 @@ export default function Wallet() {
     const [pix, setPix] = useState("");
     const [busy, setBusy] = useState(false);
 
-    const load = () => api.get("/wallet").then((r) => setData(r.data));
+    const load = () => walletAPI.get().then(setData).catch(() => {});
 
     useEffect(() => {
         if (loading) return;
@@ -26,11 +26,11 @@ export default function Wallet() {
         e.preventDefault();
         setBusy(true);
         try {
-            await api.post("/wallet/withdraw", { amount: parseFloat(amount), pix_key: pix });
+            await walletAPI.withdraw({ amount: parseFloat(amount), pixKey: pix });
             toast.success("Saque solicitado!");
             setAmount(""); setPix("");
             load();
-        } catch (err) { toast.error(err.response?.data?.detail || "Erro"); } finally { setBusy(false); }
+        } catch (err) { toast.error(err.message || "Erro"); } finally { setBusy(false); }
     };
 
     if (loading || !user || !data) return <Layout><div className="min-h-screen flex items-center justify-center">Carregando...</div></Layout>;
