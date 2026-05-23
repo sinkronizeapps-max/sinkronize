@@ -283,7 +283,7 @@ export default function Landing() {
 
             {/* FINAL BRAND CLOSER */}
             <section className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-12 lg:py-16">
-                <div className="bg-[#ECA882] rounded-[2rem] py-12 px-8 lg:py-14 text-center relative overflow-hidden">
+                <div className="bg-[#f7c19b] rounded-[2rem] py-12 px-8 lg:py-14 text-center relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#D97757]/20 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3" />
                     <div className="relative flex flex-col items-center">
                         <img src="https://customer-assets.emergentagent.com/job_affiliate-hub-v1/artifacts/76xgxdey_L.png" alt="SINKRONIZE" className="w-64 lg:w-80 object-contain mb-6" />
