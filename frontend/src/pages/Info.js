@@ -36,12 +36,11 @@ export function ForProducers() {
                     ))}
                 </div>
             </section>
-            <section className="max-w-4xl mx-auto px-6 py-20">
-                <div className="bg-[#1A1918] text-white rounded-3xl p-12 text-center">
-                    <h2 className="font-serif-display text-4xl mb-4">Comece a vender em minutos.</h2>
-                    <p className="text-white/70 mb-8">Sem burocracia. Sem mensalidade. Sem limites.</p>
-                    <Link to="/register" className="inline-flex items-center gap-2 bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full px-8 py-4 font-semibold">Criar minha conta <ArrowRight className="w-4 h-4" /></Link>
-                </div>
+            <section className="max-w-2xl mx-auto px-6 py-20 text-center flex flex-col items-center">
+                <img src="/sinkronize-logo.png" alt="SINKRONIZE" className="w-48 lg:w-64 object-contain mb-8" />
+                <h2 className="font-serif-display text-4xl font-semibold mb-4">Comece a vender em minutos.</h2>
+                <p className="text-[#524F4A] mb-8">Sem burocracia. Sem mensalidade. Sem limites.</p>
+                <Link to="/register" className="inline-flex items-center gap-2 bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full px-8 py-3.5 font-semibold transition-all shadow-[0_6px_20px_rgba(217,119,87,0.35)] hover:-translate-y-0.5">Criar minha conta <ArrowRight className="w-4 h-4" /></Link>
             </section>
         </Layout>
     );
