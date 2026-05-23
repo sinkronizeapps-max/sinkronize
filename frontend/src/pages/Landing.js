@@ -274,13 +274,6 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* COMING SOON / TESTIMONIALS PLACEHOLDER */}
-            <section className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-24 text-center">
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D97757]">Em breve</span>
-                <h2 className="font-serif-display text-4xl sm:text-5xl font-semibold tracking-tight text-[#1A1918] mt-3 mb-5">Histórias dos nossos fundadores.</h2>
-                <p className="text-lg text-[#524F4A] max-w-2xl mx-auto">Os primeiros produtores e afiliados que entrarem agora terão seus depoimentos publicados aqui. Quem sabe o próximo seja o seu?</p>
-            </section>
-
             {/* FINAL BRAND CLOSER */}
             <section className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-12 lg:py-16">
                 <div className="bg-[#f7c19b] rounded-[2rem] py-12 px-8 lg:py-14 text-center relative overflow-hidden">
