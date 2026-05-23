@@ -226,7 +226,7 @@ export default function Landing() {
                 <div className="flex items-end justify-between mb-12 flex-wrap gap-6">
                     <div>
                         <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D97757]">Marketplace</span>
-                        <h2 className="font-serif-display text-4xl sm:text-5xl font-semibold tracking-tight text-[#1A1918] mt-3">Apps em destaque</h2>
+                        <h2 className="font-serif-display text-4xl sm:text-5xl font-semibold tracking-tight text-[#1A1918] mt-3">Marketplace</h2>
                     </div>
                     <Link to="/marketplace" className="inline-flex items-center gap-2 text-sm font-semibold text-[#1A1918] hover:text-[#D97757]" data-testid="see-all-apps">
                         Ver todos <ArrowRight className="w-4 h-4" />
