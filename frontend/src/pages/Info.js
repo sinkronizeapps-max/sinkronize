@@ -60,6 +60,9 @@ export function ForAffiliates() {
                 </div>
             </section>
             <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-20">
+                <div className="flex justify-center mb-6">
+                    <img src="/sinkronize-logo.png" alt="SINKRONIZE" className="w-48 lg:w-64 object-contain" />
+                </div>
                 <h2 className="font-serif-display text-4xl text-center mb-16">Programa de níveis</h2>
                 <div className="grid md:grid-cols-3 gap-6">
                     {[
