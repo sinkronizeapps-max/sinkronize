@@ -55,7 +55,7 @@ export const Header = () => {
                             )}
                         </div>
                     ) : (
-                        <Link to="/login" className="text-sm font-medium text-[#524F4A] hover:text-[#1A1918] transition-colors px-3 py-2" data-testid="header-login-link">Entrar</Link>
+                        <Link to="/login" className="text-sm font-medium bg-[#D97757] text-white hover:bg-[#C55D3D] rounded-full px-5 py-2.5 transition-colors shadow-sm" data-testid="header-login-link">Entrar</Link>
                     )}
                 </div>
 
@@ -72,7 +72,7 @@ export const Header = () => {
                             <button onClick={() => { logout(); navigate("/"); }} className="block text-sm font-medium text-[#B04646]">Sair</button>
                         </>
                     ) : (
-                        <Link to="/login" className="block text-sm font-medium" onClick={() => setOpen(false)}>Entrar</Link>
+                        <Link to="/login" className="inline-block text-sm font-medium bg-[#D97757] text-white rounded-full px-5 py-2" onClick={() => setOpen(false)}>Entrar</Link>
                     )}
                 </div>
             )}
