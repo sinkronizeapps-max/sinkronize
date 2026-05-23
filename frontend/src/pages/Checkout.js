@@ -22,6 +22,10 @@ export default function Checkout() {
 
     const submit = async (e) => {
         e.preventDefault();
+        if (app.is_demo) {
+            toast.info("Este é um app demonstrativo. O checkout estará disponível em breve!");
+            return;
+        }
         setLoading(true);
         try {
             const r = await salesAPI.checkout({
