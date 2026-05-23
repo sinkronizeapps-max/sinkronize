@@ -24,10 +24,6 @@ export default function AppDetail() {
 
     const becomeAffiliate = async () => {
         if (!user) { navigate("/login"); return; }
-        if (app.is_demo) {
-            toast.info("Este é um app demonstrativo. Em breve apps reais estarão disponíveis!");
-            return;
-        }
         try {
             const r = await affiliationsAPI.create(app.id);
             setAff(r);

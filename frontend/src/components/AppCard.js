@@ -18,11 +18,6 @@ export const AppCard = ({ app }) => {
                         <tier.icon className="w-3 h-3" /> {tier.label}
                     </span>
                 )}
-                {app.is_demo && (
-                    <span className="absolute bottom-3 left-3 inline-flex items-center gap-1 text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-bold bg-[#1A1918]/70 text-white backdrop-blur">
-                        Em breve
-                    </span>
-                )}
                 <span className="absolute top-3 right-3 bg-white/95 backdrop-blur text-[#A5472A] text-xs px-2.5 py-1 rounded-full font-bold flex items-center gap-1">
                     <TrendingUp className="w-3 h-3" /> {app.commission_pct}%
                 </span>
