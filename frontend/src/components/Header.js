@@ -21,9 +21,7 @@ export const Header = () => {
 
                 <nav className="hidden md:flex items-center gap-5 lg:gap-7 mx-4">
                     <Link to="/marketplace" className="text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors whitespace-nowrap" data-testid="nav-marketplace">Marketplace</Link>
-                    <Link to="/produtores" className="text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors whitespace-nowrap" data-testid="nav-producers">Produtores</Link>
-                    <Link to="/afiliados" className="text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors whitespace-nowrap" data-testid="nav-affiliates">Afiliados</Link>
-                    <a href="/#como-funciona" className="hidden lg:inline text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors whitespace-nowrap" data-testid="nav-how">Como funciona</a>
+                    <a href="/#como-funciona" className="text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors whitespace-nowrap" data-testid="nav-how">Como funciona</a>
                 </nav>
 
                 <div className="hidden md:flex items-center gap-3 shrink-0">
@@ -77,8 +75,7 @@ export const Header = () => {
             {open && (
                 <div className="md:hidden border-t border-[#E6E1D6] bg-[#FAF9F5] px-6 py-4 space-y-3" data-testid="mobile-menu">
                     <Link to="/marketplace" className="block text-sm font-medium" onClick={() => setOpen(false)}>Marketplace</Link>
-                    <Link to="/produtores" className="block text-sm font-medium" onClick={() => setOpen(false)}>Para Produtores</Link>
-                    <Link to="/afiliados" className="block text-sm font-medium" onClick={() => setOpen(false)}>Para Afiliados</Link>
+                    <a href="/#como-funciona" className="block text-sm font-medium" onClick={() => setOpen(false)}>Como funciona</a>
                     {user ? (
                         <>
                             <Link to="/dashboard" className="block text-sm font-medium" onClick={() => setOpen(false)}>Painel</Link>
