@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { Menu, X, ChevronDown, LogOut, LayoutDashboard, Wallet as WalletIcon } from "lucide-react";
 import { useState } from "react";
 
-const LOGO = "https://customer-assets.emergentagent.com/job_affiliate-hub-v1/artifacts/gx74436b_L1.png";
+const LOGO = "/sinkronize-icon.png";
 
 export const Header = () => {
     const { user, logout } = useAuth();

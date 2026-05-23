@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "sonner";
 
-const LOGO = "https://customer-assets.emergentagent.com/job_affiliate-hub-v1/artifacts/gx74436b_L1.png";
+const LOGO = "/sinkronize-icon.png";
 
 import { supabase } from "../lib/supabase";
 
