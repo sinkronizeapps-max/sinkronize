@@ -24,8 +24,8 @@ export default function Marketplace() {
             <section className="bg-gradient-to-br from-[#F5F0E8] to-[#FAF9F5] py-16 lg:py-20">
                 <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
                     <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D97757]">Marketplace</span>
-                    <h1 className="font-serif-display text-4xl lg:text-5xl font-semibold tracking-tight text-[#1A1918] mt-3 mb-4">Descubra apps incríveis.</h1>
-                    <p className="text-lg text-[#524F4A] max-w-2xl">Centenas de aplicativos curados para você assinar e transformar sua rotina.</p>
+                    <h1 className="font-serif-display text-4xl lg:text-5xl font-semibold tracking-tight text-[#1A1918] mt-3 mb-4">O melhor da tecnologia, reunido aqui.</h1>
+                    <p className="text-lg text-[#524F4A] max-w-2xl">Explore apps cuidadosamente selecionados para turbinar sua produtividade, saúde e negócios.</p>
                 </div>
             </section>
 
