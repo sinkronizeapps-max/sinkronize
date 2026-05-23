@@ -14,19 +14,24 @@ Deno.serve(async (req) => {
   try {
     const { appId, buyerEmail, buyerName, affiliationCode, installments } = await req.json();
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-    // Fetch app details
+    if (!supabaseUrl || !serviceRoleKey) {
+      throw new Error(`Missing env: url=${!!supabaseUrl} key=${!!serviceRoleKey}`);
+    }
+
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
+
     const { data: app, error } = await supabase
       .from("apps")
       .select("*")
       .eq("id", appId)
       .single();
 
-    if (error || !app) throw new Error("App não encontrado");
+    if (error || !app) {
+      throw new Error(`App nao encontrado: erro=${error?.message} codigo=${error?.code} appId=${appId}`);
+    }
 
     const amountCents = Math.round(app.price_monthly * 100);
     const origin = req.headers.get("origin") || "https://sinkronize.vercel.app";
@@ -40,7 +45,7 @@ Deno.serve(async (req) => {
             currency: "brl",
             product_data: {
               name: app.name,
-              description: app.tagline || `Assinatura mensal — ${app.name}`,
+              description: app.tagline || `Assinatura mensal - ${app.name}`,
               images: app.icon_url ? [app.icon_url] : [],
             },
             unit_amount: amountCents,
