@@ -275,18 +275,13 @@ export default function Landing() {
             </section>
 
             {/* FINAL BRAND CLOSER */}
-            <section className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-12 lg:py-16">
-                <div className="rounded-[2rem] py-12 px-8 lg:py-14 text-center relative overflow-hidden" style={{background: 'linear-gradient(to bottom, #f7c19b 0%, #f4b890 50%, #f4b890 100%)'}}>
-                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#D97757]/20 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3" />
-                    <div className="relative flex flex-col items-center">
-                        <img src="https://customer-assets.emergentagent.com/job_affiliate-hub-v1/artifacts/76xgxdey_L.png" alt="SINKRONIZE" className="w-64 lg:w-80 object-contain mb-6 rounded-2xl" />
-                        <p className="text-base text-[#1A1918]/85 max-w-md mb-7 font-medium">Apps que vendem. Afiliados que prosperam. Comece sua jornada com a gente.</p>
-                        <Link to="/register" className="inline-flex items-center gap-2 bg-[#1A1918] hover:bg-[#2A2825] text-white rounded-full px-7 py-3 text-sm font-semibold transition-all shadow-[0_6px_20px_rgba(26,25,24,0.2)] hover:-translate-y-0.5" data-testid="final-cta-button">
-                            Criar minha conta <ArrowRight className="w-4 h-4" />
-                        </Link>
-                        <p className="text-xs text-[#1A1918]/70 mt-5 font-medium">Cadastro grátis · Primeiro mês sem taxa para os 100 primeiros produtores</p>
-                    </div>
-                </div>
+            <section className="max-w-2xl mx-auto px-6 sm:px-8 lg:px-12 py-16 lg:py-24 text-center flex flex-col items-center">
+                <img src="/logo-transparent.png" alt="SINKRONIZE" className="w-64 lg:w-80 object-contain mb-6" />
+                <p className="text-base text-[#1A1918] max-w-md mb-7 font-medium">Apps que vendem. Afiliados que prosperam. Comece sua jornada com a gente.</p>
+                <Link to="/register" className="inline-flex items-center gap-2 bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full px-7 py-3 text-sm font-semibold transition-all shadow-[0_6px_20px_rgba(217,119,87,0.35)] hover:-translate-y-0.5" data-testid="final-cta-button">
+                    Criar minha conta <ArrowRight className="w-4 h-4" />
+                </Link>
+                <p className="text-xs text-[#1A1918]/60 mt-5 font-medium">Cadastro grátis · Primeiro mês sem taxa para os 100 primeiros produtores</p>
             </section>
         </Layout>
     );
