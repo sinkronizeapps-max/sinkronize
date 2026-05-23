@@ -226,7 +226,7 @@ export default function Landing() {
                 <div className="flex items-end justify-between mb-12 flex-wrap gap-6">
                     <div>
                         <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#D97757]">Marketplace</span>
-                        <h2 className="font-serif-display text-4xl sm:text-5xl font-semibold tracking-tight text-[#1A1918] mt-3">Primeiros apps publicados</h2>
+                        <h2 className="font-serif-display text-4xl sm:text-5xl font-semibold tracking-tight text-[#1A1918] mt-3">Apps em destaque</h2>
                     </div>
                     <Link to="/marketplace" className="inline-flex items-center gap-2 text-sm font-semibold text-[#1A1918] hover:text-[#D97757]" data-testid="see-all-apps">
                         Ver todos <ArrowRight className="w-4 h-4" />
@@ -255,7 +255,7 @@ export default function Landing() {
                             {[
                                 { t: "Divisão automática", d: "Cada venda é dividida na hora entre produtor, afiliado e plataforma, sem intervenção manual." },
                                 { t: "Taxa fixa 9,9%", d: "Sem mensalidade. Sem letras miúdas. Você só paga quando vende." },
-                                { t: "PIX integrado", d: "Saques caem direto na sua chave PIX cadastrada." },
+                                { t: "Saque via PIX", d: "Solicite seu saldo a qualquer momento. Transferência para sua chave PIX em até 2 dias úteis." },
                                 { t: "Tracking de afiliados", d: "Cada afiliado tem código único com rastreamento de cliques, conversões e ticket médio." },
                                 { t: "Materiais prontos", d: "Banners, copy e hashtags geradas automaticamente para cada app." },
                             ].map((s, i) => (
