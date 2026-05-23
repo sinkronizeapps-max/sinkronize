@@ -19,10 +19,6 @@ export const Header = () => {
                     <span className="hidden lg:inline font-serif-display text-xl font-semibold tracking-tight text-[#1A1918]">SINKRONIZE</span>
                 </Link>
 
-                <nav className="hidden md:flex items-center gap-5 lg:gap-7 mx-4">
-                    <Link to="/marketplace" className="text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors whitespace-nowrap" data-testid="nav-marketplace">Marketplace</Link>
-                </nav>
-
                 <div className="hidden md:flex items-center gap-3 shrink-0">
                     {user ? (
                         <div className="relative">
@@ -59,10 +55,7 @@ export const Header = () => {
                             )}
                         </div>
                     ) : (
-                        <>
-                            <Link to="/login" className="text-sm font-medium text-[#524F4A] hover:text-[#1A1918] transition-colors px-3 py-2" data-testid="header-login-link">Entrar</Link>
-                            <Link to="/register" className="text-sm font-medium bg-[#D97757] text-white hover:bg-[#C55D3D] rounded-full px-5 py-2.5 transition-colors shadow-sm" data-testid="header-signup-link">Começar grátis</Link>
-                        </>
+                        <Link to="/login" className="text-sm font-medium text-[#524F4A] hover:text-[#1A1918] transition-colors px-3 py-2" data-testid="header-login-link">Entrar</Link>
                     )}
                 </div>
 
@@ -73,17 +66,13 @@ export const Header = () => {
 
             {open && (
                 <div className="md:hidden border-t border-[#E6E1D6] bg-[#FAF9F5] px-6 py-4 space-y-3" data-testid="mobile-menu">
-                    <Link to="/marketplace" className="block text-sm font-medium" onClick={() => setOpen(false)}>Marketplace</Link>
                     {user ? (
                         <>
                             <Link to="/dashboard" className="block text-sm font-medium" onClick={() => setOpen(false)}>Painel</Link>
                             <button onClick={() => { logout(); navigate("/"); }} className="block text-sm font-medium text-[#B04646]">Sair</button>
                         </>
                     ) : (
-                        <>
-                            <Link to="/login" className="block text-sm font-medium" onClick={() => setOpen(false)}>Entrar</Link>
-                            <Link to="/register" className="inline-block text-sm font-medium bg-[#D97757] text-white rounded-full px-5 py-2" onClick={() => setOpen(false)}>Começar grátis</Link>
-                        </>
+                        <Link to="/login" className="block text-sm font-medium" onClick={() => setOpen(false)}>Entrar</Link>
                     )}
                 </div>
             )}
