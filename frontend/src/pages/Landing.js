@@ -286,7 +286,7 @@ export default function Landing() {
                 <div className="bg-[#ECAB8C] rounded-[2rem] py-12 px-8 lg:py-14 text-center relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#D97757]/20 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3" />
                     <div className="relative flex flex-col items-center">
-                        <img src="https://customer-assets.emergentagent.com/job_affiliate-hub-v1/artifacts/76xgxdey_L.png" alt="SINKRONIZE" className="w-64 lg:w-80 object-contain mb-6" />
+                        <img src="https://customer-assets.emergentagent.com/job_affiliate-hub-v1/artifacts/76xgxdey_L.png" alt="SINKRONIZE" className="w-64 lg:w-80 object-contain mb-6 mix-blend-multiply" />
                         <p className="text-base text-[#1A1918]/85 max-w-md mb-7 font-medium">Apps que vendem. Afiliados que prosperam. Comece sua jornada com a gente.</p>
                         <Link to="/register" className="inline-flex items-center gap-2 bg-[#1A1918] hover:bg-[#2A2825] text-white rounded-full px-7 py-3 text-sm font-semibold transition-all shadow-[0_6px_20px_rgba(26,25,24,0.2)] hover:-translate-y-0.5" data-testid="final-cta-button">
                             Criar minha conta <ArrowRight className="w-4 h-4" />
