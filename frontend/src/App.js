@@ -9,6 +9,7 @@ import ProducerDashboard from "./pages/ProducerDashboard";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
 import Wallet from "./pages/Wallet";
 import Checkout from "./pages/Checkout";
+import CheckoutSuccess from "./pages/CheckoutSuccess";
 import { ForProducers, ForAffiliates } from "./pages/Info";
 import "./App.css";
 
@@ -28,6 +29,7 @@ function AppRouter() {
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<ProducerDashboard />} />
             <Route path="/afiliado" element={<AffiliateDashboard />} />
+            <Route path="/checkout/:slug/sucesso" element={<CheckoutSuccess />} />
             <Route path="/carteira" element={<Wallet />} />
             <Route path="/produtores" element={<ForProducers />} />
             <Route path="/afiliados" element={<ForAffiliates />} />
