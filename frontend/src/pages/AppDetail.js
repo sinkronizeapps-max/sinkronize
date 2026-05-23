@@ -24,6 +24,10 @@ export default function AppDetail() {
 
     const becomeAffiliate = async () => {
         if (!user) { navigate("/login"); return; }
+        if (app.is_demo) {
+            toast.warning("As afiliações para este app estão pausadas pelo produtor.");
+            return;
+        }
         try {
             const r = await affiliationsAPI.create(app.id);
             setAff(r);

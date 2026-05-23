@@ -22,6 +22,10 @@ export default function Checkout() {
 
     const submit = async (e) => {
         e.preventDefault();
+        if (app.is_demo) {
+            toast.warning("Este produto está temporariamente suspenso pelo produtor.");
+            return;
+        }
         setLoading(true);
         try {
             const r = await salesAPI.checkout({
