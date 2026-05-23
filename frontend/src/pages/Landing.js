@@ -276,7 +276,7 @@ export default function Landing() {
 
             {/* FINAL BRAND CLOSER */}
             <section className="max-w-2xl mx-auto px-6 sm:px-8 lg:px-12 py-16 lg:py-24 text-center flex flex-col items-center">
-                <h2 className="font-serif-display text-5xl lg:text-6xl font-semibold tracking-tight text-[#1A1918] mb-4">SINKRONIZE</h2>
+                <img src="/sinkronize-logo.png" alt="SINKRONIZE" className="w-72 lg:w-96 object-contain mb-6" />
                 <p className="text-base text-[#524F4A] max-w-md mb-8 font-medium">Apps que vendem. Afiliados que prosperam.<br/>Comece sua jornada com a gente.</p>
                 <Link to="/register" className="inline-flex items-center gap-2 bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full px-8 py-3.5 font-semibold transition-all shadow-[0_6px_20px_rgba(217,119,87,0.35)] hover:-translate-y-0.5" data-testid="final-cta-button">
                     Criar minha conta <ArrowRight className="w-4 h-4" />
