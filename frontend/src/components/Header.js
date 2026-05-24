@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Menu, X, ChevronDown, LogOut, LayoutDashboard, Wallet as WalletIcon, ShoppingBag } from "lucide-react";
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard, Wallet as WalletIcon, ShoppingBag, MessageCircle } from "lucide-react";
 import { useState } from "react";
 
 const LOGO = "/sinkronize-icon.png";
@@ -20,6 +20,11 @@ export const Header = () => {
                 </Link>
 
                 <div className="hidden md:flex items-center gap-3 shrink-0">
+                    {/* Link contato visível para todos */}
+                    <Link to="/contato" className="text-sm font-medium text-[#524F4A] hover:text-[#D97757] transition-colors flex items-center gap-1.5" data-testid="header-contact-link">
+                        <MessageCircle className="w-4 h-4" /> Contato
+                    </Link>
+
                     {user ? (
                         <div className="relative">
                             <button onClick={() => setMenu(!menu)} className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#E6E1D6] hover:border-[#D97757] transition-colors" data-testid="header-user-menu">
@@ -48,6 +53,9 @@ export const Header = () => {
                                         <WalletIcon className="w-4 h-4" /> Carteira
                                     </button>
                                     <div className="border-t border-[#E6E1D6]" />
+                                    <button onClick={() => { setMenu(false); navigate("/contato"); }} className="w-full text-left px-4 py-3 text-sm hover:bg-[#F5F0E8] flex items-center gap-2" data-testid="menu-contact">
+                                        <MessageCircle className="w-4 h-4" /> Contato
+                                    </button>
                                     <button onClick={() => { setMenu(false); logout(); navigate("/"); }} className="w-full text-left px-4 py-3 text-sm hover:bg-[#F5F0E8] flex items-center gap-2 text-[#B04646]" data-testid="menu-logout">
                                         <LogOut className="w-4 h-4" /> Sair
                                     </button>
@@ -66,6 +74,7 @@ export const Header = () => {
 
             {open && (
                 <div className="md:hidden border-t border-[#E6E1D6] bg-[#FAF9F5] px-6 py-4 space-y-3" data-testid="mobile-menu">
+                    <Link to="/contato" className="block text-sm font-medium" onClick={() => setOpen(false)}>Contato</Link>
                     {user ? (
                         <>
                             <Link to="/dashboard" className="block text-sm font-medium" onClick={() => setOpen(false)}>Painel</Link>

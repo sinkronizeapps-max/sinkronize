@@ -13,6 +13,7 @@ import CheckoutSuccess from "./pages/CheckoutSuccess";
 import Welcome from "./pages/Welcome";
 import MinhasCompras from "./pages/MinhasCompras";
 import { ForProducers, ForAffiliates } from "./pages/Info";
+import Contact from "./pages/Contact";
 import "./App.css";
 
 function AppRouter() {
@@ -39,6 +40,7 @@ function AppRouter() {
             <Route path="/para-produtores" element={<ForProducers />} />
             <Route path="/afiliados" element={<ForAffiliates />} />
             <Route path="/para-afiliados" element={<ForAffiliates />} />
+            <Route path="/contato" element={<Contact />} />
             <Route path="/esqueci-senha" element={<ForgotPassword />} />
             <Route path="/redefinir-senha" element={<ResetPassword />} />
         </Routes>
