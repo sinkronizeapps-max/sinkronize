@@ -38,6 +38,18 @@ export default function Checkout() {
                 },
             });
             if (error || !data?.url) throw new Error(error?.message || "Erro ao criar sessão");
+            // Registrar tentativa para rastreamento de carrinhos abandonados
+            supabase.from("checkout_attempts").insert({
+                app_id: app.id,
+                app_name: app.name,
+                app_slug: app.slug,
+                buyer_email: form.buyer_email.toLowerCase(),
+                buyer_name: form.buyer_name,
+                amount: app.price_monthly,
+                stripe_session_id: data.session_id || null,
+                affiliation_code: form.affiliation_code || null,
+                status: "pending",
+            }).then(() => {});
             window.location.href = data.url;
         } catch (err) {
             toast.error("Erro ao redirecionar para o pagamento. Tente novamente.");

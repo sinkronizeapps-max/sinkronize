@@ -120,6 +120,11 @@ Deno.serve(async (req) => {
   // Update app subscribers
   await supabase.from("apps").update({ subscribers: app.subscribers + 1 }).eq("id", appId);
 
+  // Marcar tentativa de checkout como completada
+  await supabase.from("checkout_attempts")
+    .update({ status: "completed", updated_at: new Date().toISOString() })
+    .eq("stripe_session_id", session.id);
+
   // Fetch producer info
   let producerEmail = null;
   let producerName = app.producer_name;

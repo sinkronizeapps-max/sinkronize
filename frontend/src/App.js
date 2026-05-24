@@ -14,6 +14,7 @@ import Welcome from "./pages/Welcome";
 import MinhasCompras from "./pages/MinhasCompras";
 import { ForProducers, ForAffiliates } from "./pages/Info";
 import Contact from "./pages/Contact";
+import AdminDashboard from "./pages/AdminDashboard";
 import "./App.css";
 
 function AppRouter() {
@@ -43,6 +44,7 @@ function AppRouter() {
             <Route path="/contato" element={<Contact />} />
             <Route path="/esqueci-senha" element={<ForgotPassword />} />
             <Route path="/redefinir-senha" element={<ResetPassword />} />
+            <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
     );
 }
