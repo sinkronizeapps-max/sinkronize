@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Plus, TrendingUp, DollarSign, Package, ShoppingBag, X, Megaphone, Copy, Crown, Zap, Check } from "lucide-react";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import AppRegistrationModal from "../components/AppRegistrationModal";
 
 const CATS = ["Bem-estar", "Produtividade", "Fitness", "Finanças", "Culinária", "Educação", "Pets", "Negócios"];
 
@@ -22,6 +23,7 @@ export default function ProducerDashboard() {
     const [apps, setApps] = useState([]);
     const [sales, setSales] = useState([]);
     const [showCreate, setShowCreate] = useState(false);
+    const [showRegModal, setShowRegModal] = useState(false);
     const [showMaterials, setShowMaterials] = useState(null);
     const [materials, setMaterials] = useState(null);
     const [showUpgrade, setShowUpgrade] = useState(null);
@@ -85,7 +87,7 @@ export default function ProducerDashboard() {
                         <span className="text-xs uppercase tracking-widest text-[#D97757] font-semibold">Painel do Produtor</span>
                         <h1 className="font-serif-display text-4xl font-semibold mt-2">Olá, {user.name?.split(" ")[0]}.</h1>
                     </div>
-                    <button onClick={() => setShowCreate(true)} className="inline-flex items-center gap-2 bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full px-6 py-3 font-semibold transition-colors" data-testid="create-app-button">
+                    <button onClick={() => setShowRegModal(true)} className="inline-flex items-center gap-2 bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full px-6 py-3 font-semibold transition-colors" data-testid="create-app-button">
                         <Plus className="w-4 h-4" /> Publicar novo app
                     </button>
                 </div>
@@ -173,6 +175,13 @@ export default function ProducerDashboard() {
                     )}
                 </div>
             </section>
+
+            {showRegModal && (
+                <AppRegistrationModal
+                    onClose={() => setShowRegModal(false)}
+                    onSuccess={() => appsAPI.myApps().then(setApps)}
+                />
+            )}
 
             {showCreate && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowCreate(false)}>
