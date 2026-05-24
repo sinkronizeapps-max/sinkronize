@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Layout } from "../components/Layout";
-import { statsAPI, affiliationsAPI, salesAPI } from "../lib/api";
+import { statsAPI, affiliationsAPI, salesAPI, appsAPI } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import { Award, MousePointerClick, ShoppingBag, TrendingUp, Copy, ExternalLink } from "lucide-react";
+import { Award, MousePointerClick, ShoppingBag, TrendingUp, Copy, ExternalLink, Plus, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
@@ -19,6 +19,8 @@ export default function AffiliateDashboard() {
     const [stats, setStats] = useState(null);
     const [aff, setAff] = useState([]);
     const [comms, setComms] = useState([]);
+    const [availableApps, setAvailableApps] = useState([]);
+    const [affiliating, setAffiliating] = useState(null);
 
     useEffect(() => {
         if (loading) return;
@@ -27,6 +29,7 @@ export default function AffiliateDashboard() {
             statsAPI.affiliate().then(setStats).catch(() => {}),
             affiliationsAPI.myAffiliations().then(setAff).catch(() => {}),
             salesAPI.myCommissions().then(setComms).catch(() => {}),
+            appsAPI.listForAffiliation().then(setAvailableApps).catch(() => {}),
         ]);
     }, [user, loading, navigate]);
 
@@ -43,6 +46,24 @@ export default function AffiliateDashboard() {
     const copyLink = (code, slug) => {
         navigator.clipboard.writeText(`${window.location.origin}/app/${slug}?ref=${code}`);
         toast.success("Link copiado!");
+    };
+
+    const affiliateTo = async (appId) => {
+        setAffiliating(appId);
+        try {
+            const result = await affiliationsAPI.create(appId);
+            if (result.status === 'pending') {
+                toast.success("Solicitação enviada! Aguarde aprovação do produtor.");
+            } else {
+                toast.success("Afiliado com sucesso! Seu link já está ativo.");
+            }
+            affiliationsAPI.myAffiliations().then(setAff);
+            appsAPI.listForAffiliation().then(setAvailableApps);
+        } catch (err) {
+            toast.error(err.message);
+        } finally {
+            setAffiliating(null);
+        }
     };
 
     return (
@@ -128,6 +149,64 @@ export default function AffiliateDashboard() {
                         </div>
                     )}
                 </div>
+
+                {availableApps.length > 0 && (
+                    <div className="bg-white border border-[#E6E1D6] rounded-2xl p-6 mb-8">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-serif-display text-xl">Apps disponíveis para afiliação</h3>
+                            <span className="text-xs bg-[#FDF4F1] text-[#D97757] border border-[#FBE6DF] px-3 py-1 rounded-full font-semibold">{availableApps.length} disponíveis</span>
+                        </div>
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {availableApps.slice(0, 6).map(app => (
+                                <div key={app.id} className="border border-[#E6E1D6] rounded-2xl p-4 hover:border-[#D97757]/40 transition-colors">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        {app.icon_url ? (
+                                            <img src={app.icon_url} alt="" className="w-10 h-10 rounded-xl object-cover" />
+                                        ) : (
+                                            <div className="w-10 h-10 rounded-xl bg-[#F5F0E8]" />
+                                        )}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-semibold text-sm truncate">{app.name}</p>
+                                            <p className="text-xs text-[#8A857D] truncate">{app.tagline}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-xs text-[#524F4A]">R$ {app.price_monthly?.toFixed(2)}/mês</span>
+                                        <span className="text-xs font-semibold text-[#2D7A5C] bg-[#F0F9F4] px-2 py-0.5 rounded-full">{app.commission_pct}% comissão</span>
+                                    </div>
+                                    <button
+                                        onClick={() => affiliateTo(app.id)}
+                                        disabled={affiliating === app.id}
+                                        className="w-full bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full py-2 text-xs font-semibold disabled:opacity-60 flex items-center justify-center gap-1.5 transition-colors"
+                                        data-testid={`affiliate-btn-${app.id}`}
+                                    >
+                                        {affiliating === app.id ? "Processando..." : <><Plus className="w-3 h-3" /> Afiliar-se</>}
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                        {availableApps.length > 6 && (
+                            <div className="text-center mt-4">
+                                <Link to="/marketplace" className="text-sm text-[#D97757] font-semibold hover:underline">Ver todos no marketplace →</Link>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Afiliações pendentes */}
+                {aff.some(a => a.status === 'pending') && (
+                    <div className="bg-[#FFF8F0] border border-[#FBE6DF] rounded-2xl p-5 mb-8">
+                        <h3 className="font-semibold text-[#A5472A] mb-3 flex items-center gap-2"><Clock className="w-4 h-4" /> Solicitações pendentes</h3>
+                        <div className="space-y-2">
+                            {aff.filter(a => a.status === 'pending').map(a => (
+                                <div key={a.affiliation_id || a.id} className="flex items-center justify-between text-sm">
+                                    <span className="font-medium">{a.app_name}</span>
+                                    <span className="text-xs text-[#A5472A] bg-[#FDF4F1] px-2 py-0.5 rounded-full">Aguardando aprovação</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 <div className="bg-white border border-[#E6E1D6] rounded-2xl p-6">
                     <h3 className="font-serif-display text-xl mb-4">Histórico de comissões</h3>

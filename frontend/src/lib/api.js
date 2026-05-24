@@ -38,6 +38,18 @@ export const authAPI = {
     return profile;
   },
 
+  resetPassword: async (email) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/redefinir-senha'
+    });
+    if (error) throw error;
+  },
+
+  updatePassword: async (newPassword) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+  },
+
   updateProfile: async (updates) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Não autenticado');
@@ -128,6 +140,34 @@ export const appsAPI = {
     return data || [];
   },
 
+  update: async (appId, payload) => {
+    const { data, error } = await supabase
+      .from('apps')
+      .update(payload)
+      .eq('id', appId)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  listForAffiliation: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: apps, error } = await supabase
+      .from('apps')
+      .select('*')
+      .eq('affiliate_mode', 'open')
+      .order('tier_rank', { ascending: false });
+    if (error) throw error;
+    if (!user) return apps || [];
+    const { data: myAffs } = await supabase
+      .from('affiliations')
+      .select('app_id')
+      .eq('affiliate_id', user.id);
+    const myAppIds = new Set((myAffs || []).map(a => a.app_id));
+    return (apps || []).filter(a => !myAppIds.has(a.id));
+  },
+
   upgradeTier: async (appId, tier) => {
     const tierRank = { basico: 0, plus: 1, premium: 2 };
     const { data, error } = await supabase
@@ -155,6 +195,7 @@ export const affiliationsAPI = {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Não autenticado');
     const app = await appsAPI.getById(appId);
+    if (app.affiliate_mode === 'closed') throw new Error('Este app não aceita afiliados no momento.');
     // Check if already exists
     const { data: existing } = await supabase
       .from('affiliations')
@@ -164,9 +205,10 @@ export const affiliationsAPI = {
       .single();
     if (existing) return existing;
     const code = Math.random().toString(36).slice(2, 10).toUpperCase();
+    const status = app.affiliate_mode === 'manual' ? 'pending' : 'approved';
     const { data, error } = await supabase
       .from('affiliations')
-      .insert({ code, app_id: appId, app_name: app.name, app_slug: app.slug, affiliate_id: user.id })
+      .insert({ code, app_id: appId, app_name: app.name, app_slug: app.slug, affiliate_id: user.id, status })
       .select()
       .single();
     if (error) throw error;
@@ -180,9 +222,37 @@ export const affiliationsAPI = {
       .from('affiliations')
       .select('*, apps(*)')
       .eq('affiliate_id', user.id)
+      .neq('status', 'rejected')
       .order('created_at', { ascending: false });
     if (error) throw error;
     return data || [];
+  },
+
+  pendingForApp: async (appId) => {
+    const { data, error } = await supabase
+      .from('affiliations')
+      .select('*, profiles(name, email, picture)')
+      .eq('app_id', appId)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  },
+
+  approve: async (affiliationId) => {
+    const { error } = await supabase
+      .from('affiliations')
+      .update({ status: 'approved' })
+      .eq('id', affiliationId);
+    if (error) throw error;
+  },
+
+  reject: async (affiliationId) => {
+    const { error } = await supabase
+      .from('affiliations')
+      .update({ status: 'rejected' })
+      .eq('id', affiliationId);
+    if (error) throw error;
   },
 
   trackClick: async (code) => {
@@ -479,6 +549,22 @@ export const statsAPI = {
       affiliations: allAffs.length,
       chart: Object.entries(series).map(([day, value]) => ({ day, value: parseFloat(value.toFixed(2)) }))
     };
+  }
+};
+
+// =============================================
+// STORAGE
+// =============================================
+export const storageAPI = {
+  upload: async (file, folder = 'apps') => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Não autenticado');
+    const ext = file.name.split('.').pop();
+    const path = `${folder}/${user.id}-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from('app-assets').upload(path, file, { upsert: true });
+    if (error) throw error;
+    const { data: { publicUrl } } = supabase.storage.from('app-assets').getPublicUrl(path);
+    return publicUrl;
   }
 };
 

@@ -106,7 +106,7 @@ export default function Landing() {
                                 <Link to="/marketplace" className="inline-flex items-center gap-2 bg-white text-[#1A1918] hover:border-[#D97757] hover:text-[#D97757] border border-[#E6E1D6] rounded-full px-8 py-4 text-base font-semibold transition-colors" data-testid="hero-cta-secondary">
                                     Ver marketplace
                                 </Link>
-                                <Link to="/para-afiliados" className="inline-flex items-center gap-2 bg-[#D97757] text-white hover:bg-[#C55D3D] rounded-full px-8 py-4 text-base font-semibold transition-all shadow-[0_8px_24px_rgba(217,119,87,0.25)] hover:shadow-[0_12px_32px_rgba(217,119,87,0.35)] hover:-translate-y-0.5" data-testid="hero-cta-affiliate">
+                                <Link to="/register?role=affiliate" className="inline-flex items-center gap-2 bg-[#D97757] text-white hover:bg-[#C55D3D] rounded-full px-8 py-4 text-base font-semibold transition-all shadow-[0_8px_24px_rgba(217,119,87,0.25)] hover:shadow-[0_12px_32px_rgba(217,119,87,0.35)] hover:-translate-y-0.5" data-testid="hero-cta-affiliate">
                                     Seja afiliado
                                 </Link>
                             </div>

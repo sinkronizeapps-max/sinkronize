@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { authAPI } from "../lib/api";
 import { toast } from "sonner";
+import { supabase } from "../lib/supabase";
 
 const LOGO = "/sinkronize-icon.png";
-
-import { supabase } from "../lib/supabase";
 
 const handleGoogle = async () => {
     await supabase.auth.signInWithOAuth({
@@ -78,7 +78,10 @@ export function Login() {
                             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full bg-white border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/20 focus:border-[#D97757]" data-testid="login-email-input" placeholder="voce@exemplo.com" />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-[#1A1918] mb-1.5">Senha</label>
+                            <div className="flex items-center justify-between mb-1.5">
+                                <label className="block text-sm font-medium text-[#1A1918]">Senha</label>
+                                <Link to="/esqueci-senha" className="text-xs text-[#D97757] hover:underline" data-testid="forgot-password-link">Esqueci minha senha</Link>
+                            </div>
                             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full bg-white border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/20 focus:border-[#D97757]" data-testid="login-password-input" placeholder="••••••••" />
                         </div>
                     </div>
@@ -90,7 +93,6 @@ export function Login() {
                     <p className="text-sm text-[#524F4A] text-center mt-6">
                         Não tem conta? <Link to="/register" className="text-[#D97757] font-semibold hover:underline" data-testid="login-register-link">Crie agora</Link>
                     </p>
-                    <p className="text-xs text-[#8A857D] text-center mt-3">Demo: producer@sinkronize.com / demo1234</p>
                 </form>
             </div>
         </div>
@@ -100,7 +102,11 @@ export function Login() {
 export function Register() {
     const { register } = useAuth();
     const navigate = useNavigate();
-    const [form, setForm] = useState({ name: "", email: "", password: "", role: "both" });
+    const location = useLocation();
+    // Pre-select role from URL: /register?role=affiliate
+    const params = new URLSearchParams(location.search);
+    const defaultRole = params.get("role") || "both";
+    const [form, setForm] = useState({ name: "", email: "", password: "", role: defaultRole });
     const [loading, setLoading] = useState(false);
 
     const submit = async (e) => {
@@ -108,8 +114,8 @@ export function Register() {
         setLoading(true);
         try {
             await register(form);
-            toast.success("Conta criada com sucesso!");
-            navigate("/dashboard");
+            toast.success("Conta criada! Bem-vindo(a) à SINKRONIZE 🎉");
+            navigate("/bem-vindo");
         } catch (err) {
             toast.error(err.message || "Erro ao criar conta");
         } finally {
@@ -160,22 +166,23 @@ export function Register() {
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium mb-1.5">Nome completo</label>
-                            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="w-full bg-white border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/20 focus:border-[#D97757]" data-testid="register-name-input" />
+                            <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="w-full bg-white border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/20 focus:border-[#D97757]" data-testid="register-name-input" placeholder="Seu nome completo" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-1.5">E-mail</label>
-                            <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required className="w-full bg-white border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/20 focus:border-[#D97757]" data-testid="register-email-input" />
+                            <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required className="w-full bg-white border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/20 focus:border-[#D97757]" data-testid="register-email-input" placeholder="voce@exemplo.com" />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-1.5">Senha</label>
-                            <input type="password" minLength={6} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required className="w-full bg-white border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/20 focus:border-[#D97757]" data-testid="register-password-input" />
+                            <label className="block text-sm font-medium mb-1.5">Senha <span className="text-[#8A857D] font-normal">(mínimo 6 caracteres)</span></label>
+                            <input type="password" minLength={6} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required className="w-full bg-white border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/20 focus:border-[#D97757]" data-testid="register-password-input" placeholder="••••••••" />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-1.5">Você é</label>
+                            <label className="block text-sm font-medium mb-1.5">Quero me cadastrar como</label>
                             <div className="grid grid-cols-3 gap-2">
-                                {[["producer", "Produtor"], ["affiliate", "Afiliado"], ["both", "Ambos"]].map(([v, l]) => (
-                                    <button key={v} type="button" onClick={() => setForm({ ...form, role: v })} className={`py-3 rounded-xl border text-sm font-medium transition-colors ${form.role === v ? "bg-[#D97757] text-white border-[#D97757]" : "bg-white border-[#E6E1D6] text-[#524F4A] hover:border-[#D97757]"}`} data-testid={`register-role-${v}`}>
-                                        {l}
+                                {[["producer", "Produtor", "Tenho um app"], ["affiliate", "Afiliado", "Quero divulgar"], ["both", "Ambos", "Os dois"]].map(([v, l, sub]) => (
+                                    <button key={v} type="button" onClick={() => setForm({ ...form, role: v })} className={`py-2.5 px-2 rounded-xl border text-sm transition-colors ${form.role === v ? "bg-[#D97757] text-white border-[#D97757]" : "bg-white border-[#E6E1D6] text-[#524F4A] hover:border-[#D97757]"}`} data-testid={`register-role-${v}`}>
+                                        <div className="font-semibold">{l}</div>
+                                        <div className={`text-[10px] mt-0.5 ${form.role === v ? "text-white/80" : "text-[#8A857D]"}`}>{sub}</div>
                                     </button>
                                 ))}
                             </div>
@@ -195,11 +202,125 @@ export function Register() {
     );
 }
 
+export function ForgotPassword() {
+    const [email, setEmail] = useState("");
+    const [sent, setSent] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const submit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            await authAPI.resetPassword(email);
+            setSent(true);
+        } catch (err) {
+            toast.error(err.message || "Erro ao enviar e-mail");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-8">
+            <div className="w-full max-w-md">
+                <Link to="/" className="flex items-center gap-3 mb-10 justify-center">
+                    <img src={LOGO} alt="SINKRONIZE" className="w-10 h-10 rounded-xl" />
+                    <span className="font-serif-display text-xl font-semibold">SINKRONIZE</span>
+                </Link>
+                {sent ? (
+                    <div className="text-center">
+                        <div className="w-16 h-16 bg-[#F0F9F4] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg className="w-8 h-8 text-[#2D7A5C]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                        <h1 className="font-serif-display text-2xl font-semibold mb-2">E-mail enviado!</h1>
+                        <p className="text-[#524F4A] mb-6">Verifique sua caixa de entrada e clique no link para redefinir sua senha.</p>
+                        <Link to="/login" className="text-[#D97757] font-semibold hover:underline">Voltar para o login</Link>
+                    </div>
+                ) : (
+                    <form onSubmit={submit}>
+                        <h1 className="font-serif-display text-3xl font-semibold text-[#1A1918] mb-2">Esqueceu a senha?</h1>
+                        <p className="text-[#524F4A] mb-8">Informe seu e-mail e enviaremos um link para redefinir sua senha.</p>
+                        <label className="block text-sm font-medium text-[#1A1918] mb-1.5">E-mail</label>
+                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full bg-white border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/20 focus:border-[#D97757] mb-6" placeholder="voce@exemplo.com" data-testid="forgot-email-input" />
+                        <button type="submit" disabled={loading} className="w-full bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full py-3 font-semibold transition-colors disabled:opacity-60" data-testid="forgot-submit-button">
+                            {loading ? "Enviando..." : "Enviar link de redefinição"}
+                        </button>
+                        <p className="text-sm text-center mt-6"><Link to="/login" className="text-[#D97757] hover:underline">Voltar para o login</Link></p>
+                    </form>
+                )}
+            </div>
+        </div>
+    );
+}
+
+export function ResetPassword() {
+    const [password, setPassword] = useState("");
+    const [confirm, setConfirm] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [done, setDone] = useState(false);
+    const navigate = useNavigate();
+
+    const submit = async (e) => {
+        e.preventDefault();
+        if (password !== confirm) { toast.error("As senhas não coincidem"); return; }
+        if (password.length < 6) { toast.error("A senha deve ter pelo menos 6 caracteres"); return; }
+        setLoading(true);
+        try {
+            await authAPI.updatePassword(password);
+            setDone(true);
+            toast.success("Senha redefinida com sucesso!");
+            setTimeout(() => navigate("/login"), 2000);
+        } catch (err) {
+            toast.error(err.message || "Erro ao redefinir senha");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center p-8">
+            <div className="w-full max-w-md">
+                <Link to="/" className="flex items-center gap-3 mb-10 justify-center">
+                    <img src={LOGO} alt="SINKRONIZE" className="w-10 h-10 rounded-xl" />
+                    <span className="font-serif-display text-xl font-semibold">SINKRONIZE</span>
+                </Link>
+                {done ? (
+                    <div className="text-center">
+                        <div className="w-16 h-16 bg-[#F0F9F4] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg className="w-8 h-8 text-[#2D7A5C]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                        <h1 className="font-serif-display text-2xl font-semibold mb-2">Senha redefinida!</h1>
+                        <p className="text-[#524F4A]">Redirecionando para o login...</p>
+                    </div>
+                ) : (
+                    <form onSubmit={submit}>
+                        <h1 className="font-serif-display text-3xl font-semibold text-[#1A1918] mb-2">Nova senha</h1>
+                        <p className="text-[#524F4A] mb-8">Escolha uma nova senha para sua conta.</p>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-[#1A1918] mb-1.5">Nova senha</label>
+                                <input type="password" minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full bg-white border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/20 focus:border-[#D97757]" placeholder="••••••••" data-testid="reset-password-input" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-[#1A1918] mb-1.5">Confirmar nova senha</label>
+                                <input type="password" minLength={6} value={confirm} onChange={(e) => setConfirm(e.target.value)} required className="w-full bg-white border border-[#E6E1D6] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/20 focus:border-[#D97757]" placeholder="••••••••" data-testid="reset-confirm-input" />
+                            </div>
+                        </div>
+                        <button type="submit" disabled={loading} className="w-full mt-6 bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full py-3 font-semibold transition-colors disabled:opacity-60" data-testid="reset-submit-button">
+                            {loading ? "Salvando..." : "Salvar nova senha"}
+                        </button>
+                    </form>
+                )}
+            </div>
+        </div>
+    );
+}
+
 export function AuthCallback() {
     const navigate = useNavigate();
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) navigate('/dashboard', { replace: true });
+            if (session) navigate('/bem-vindo', { replace: true });
             else navigate('/login', { replace: true });
         });
     }, [navigate]);

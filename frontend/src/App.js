@@ -4,7 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Landing from "./pages/Landing";
 import Marketplace from "./pages/Marketplace";
 import AppDetail from "./pages/AppDetail";
-import { Login, Register, AuthCallback } from "./pages/Auth";
+import { Login, Register, AuthCallback, ForgotPassword, ResetPassword } from "./pages/Auth";
 import ProducerDashboard from "./pages/ProducerDashboard";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
 import Wallet from "./pages/Wallet";
@@ -36,7 +36,11 @@ function AppRouter() {
             <Route path="/minhas-compras" element={<MinhasCompras />} />
             <Route path="/carteira" element={<Wallet />} />
             <Route path="/produtores" element={<ForProducers />} />
+            <Route path="/para-produtores" element={<ForProducers />} />
             <Route path="/afiliados" element={<ForAffiliates />} />
+            <Route path="/para-afiliados" element={<ForAffiliates />} />
+            <Route path="/esqueci-senha" element={<ForgotPassword />} />
+            <Route path="/redefinir-senha" element={<ResetPassword />} />
         </Routes>
     );
 }

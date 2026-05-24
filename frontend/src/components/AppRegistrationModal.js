@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { X, Database, Image, DollarSign, Users, Link2, Zap, ChevronRight, ChevronLeft, Check, AlertCircle } from "lucide-react";
-import { appsAPI } from "../lib/api";
+import { X, Database, Image, DollarSign, Users, Link2, Zap, ChevronRight, ChevronLeft, Check, AlertCircle, Upload } from "lucide-react";
+import { appsAPI, storageAPI } from "../lib/api";
 import { toast } from "sonner";
 
 const CATS = ["Bem-estar", "Produtividade", "Fitness", "Finanças", "Culinária", "Educação", "Pets", "Negócios"];
@@ -35,10 +35,12 @@ function Field({ label, hint, children }) {
 
 const inp = "w-full bg-[#FAF9F5] border border-[#E6E1D6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#D97757] focus:ring-2 focus:ring-[#D97757]/10 transition-colors placeholder:text-[#C4BDB5]";
 
-export default function AppRegistrationModal({ onClose, onSuccess }) {
-    const [tab, setTab]     = useState(0);
-    const [form, setForm]   = useState(EMPTY);
+export default function AppRegistrationModal({ onClose, onSuccess, initialData = null }) {
+    const isEdit = !!initialData;
+    const [tab, setTab]       = useState(0);
+    const [form, setForm]     = useState(initialData ? { ...EMPTY, ...initialData } : EMPTY);
     const [saving, setSaving] = useState(false);
+    const [uploading, setUploading] = useState({ icon: false, cover: false });
 
     const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
@@ -48,15 +50,35 @@ export default function AppRegistrationModal({ onClose, onSuccess }) {
         return true;
     };
 
+    const uploadFile = async (e, field) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setUploading(u => ({ ...u, [field]: true }));
+        try {
+            const url = await storageAPI.upload(file, 'apps');
+            set(field + "_url", url);
+            toast.success("Imagem enviada!");
+        } catch (err) {
+            toast.error("Erro no upload: " + err.message);
+        } finally {
+            setUploading(u => ({ ...u, [field]: false }));
+        }
+    };
+
     const submit = async () => {
         setSaving(true);
         try {
-            await appsAPI.create(form);
-            toast.success("App publicado com sucesso!");
+            if (isEdit) {
+                await appsAPI.update(initialData.id, form);
+                toast.success("App atualizado!");
+            } else {
+                await appsAPI.create(form);
+                toast.success("App publicado com sucesso!");
+            }
             onSuccess?.();
             onClose();
         } catch (e) {
-            toast.error("Erro ao publicar: " + e.message);
+            toast.error("Erro: " + e.message);
         } finally {
             setSaving(false);
         }
@@ -72,7 +94,7 @@ export default function AppRegistrationModal({ onClose, onSuccess }) {
                 {/* Header */}
                 <div className="flex items-center justify-between px-8 pt-8 pb-4 border-b border-[#E6E1D6] shrink-0">
                     <div>
-                        <h2 className="font-serif-display text-2xl font-semibold">Publicar novo app</h2>
+                        <h2 className="font-serif-display text-2xl font-semibold">{isEdit ? "Editar app" : "Publicar novo app"}</h2>
                         <p className="text-sm text-[#8A857D] mt-0.5">Passo {tab + 1} de {TABS.length}</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-[#F5F0E8] rounded-full transition-colors">
@@ -138,27 +160,45 @@ export default function AppRegistrationModal({ onClose, onSuccess }) {
                     {/* ABA 2 — MÍDIA */}
                     {tab === 1 && (
                         <div className="space-y-6">
-                            <div className="bg-[#FDF4F1] border border-[#FBE6DF] rounded-2xl p-4 flex gap-3">
-                                <AlertCircle className="w-4 h-4 text-[#D97757] shrink-0 mt-0.5" />
-                                <p className="text-sm text-[#524F4A]">Por enquanto, cole a URL da imagem. Em breve teremos upload direto do computador.</p>
-                            </div>
-                            <Field label="URL do ícone / logo" hint="Imagem quadrada recomendada. Tamanho ideal: 400x400px">
-                                <input value={form.icon_url} onChange={e => set("icon_url", e.target.value)} placeholder="https://..." className={inp} data-testid="field-icon-url" />
-                                {form.icon_url && (
-                                    <div className="mt-3 flex items-center gap-3">
-                                        <img src={form.icon_url} alt="" className="w-16 h-16 rounded-2xl object-cover border border-[#E6E1D6]" onError={e => e.target.style.display="none"} />
-                                        <span className="text-xs text-[#8A857D]">Pré-visualização do ícone</span>
+                            {/* ÍCONE */}
+                            <Field label="Ícone / Logo" hint="Imagem quadrada. Tamanho ideal: 400x400px">
+                                <div className="flex items-start gap-4">
+                                    {form.icon_url ? (
+                                        <img src={form.icon_url} alt="" className="w-20 h-20 rounded-2xl object-cover border border-[#E6E1D6] shrink-0" onError={e => e.target.style.display="none"} />
+                                    ) : (
+                                        <div className="w-20 h-20 rounded-2xl bg-[#F5F0E8] border-2 border-dashed border-[#D0C9BC] flex items-center justify-center shrink-0">
+                                            <Image className="w-7 h-7 text-[#C4BDB5]" />
+                                        </div>
+                                    )}
+                                    <div className="flex-1 space-y-2">
+                                        <label className={`flex items-center justify-center gap-2 w-full py-2.5 border-2 border-dashed border-[#D0C9BC] rounded-xl cursor-pointer hover:border-[#D97757] hover:bg-[#FDF4F1] transition-colors text-sm font-medium text-[#524F4A] ${uploading.icon ? "opacity-60 pointer-events-none" : ""}`}>
+                                            <Upload className="w-4 h-4" />
+                                            {uploading.icon ? "Enviando..." : "Enviar do computador"}
+                                            <input type="file" accept="image/*" className="hidden" onChange={e => uploadFile(e, "icon")} data-testid="upload-icon" />
+                                        </label>
+                                        <p className="text-xs text-[#8A857D] text-center">ou cole a URL</p>
+                                        <input value={form.icon_url} onChange={e => set("icon_url", e.target.value)} placeholder="https://..." className={inp} data-testid="field-icon-url" />
                                     </div>
-                                )}
+                                </div>
                             </Field>
-                            <Field label="URL da imagem de capa" hint="Imagem horizontal para o card no marketplace. Tamanho ideal: 800x450px">
-                                <input value={form.cover_url} onChange={e => set("cover_url", e.target.value)} placeholder="https://..." className={inp} data-testid="field-cover-url" />
+
+                            {/* CAPA */}
+                            <Field label="Imagem de capa" hint="Imagem horizontal para o card no marketplace. Tamanho ideal: 800x450px">
                                 {form.cover_url && (
-                                    <div className="mt-3">
-                                        <img src={form.cover_url} alt="" className="w-full h-40 rounded-2xl object-cover border border-[#E6E1D6]" onError={e => e.target.style.display="none"} />
-                                        <span className="text-xs text-[#8A857D] mt-1 block">Pré-visualização da capa</span>
+                                    <img src={form.cover_url} alt="" className="w-full h-36 rounded-2xl object-cover border border-[#E6E1D6] mb-3" onError={e => e.target.style.display="none"} />
+                                )}
+                                {!form.cover_url && (
+                                    <div className="w-full h-36 rounded-2xl bg-[#F5F0E8] border-2 border-dashed border-[#D0C9BC] flex items-center justify-center mb-3">
+                                        <Image className="w-10 h-10 text-[#C4BDB5]" />
                                     </div>
                                 )}
+                                <label className={`flex items-center justify-center gap-2 w-full py-2.5 border-2 border-dashed border-[#D0C9BC] rounded-xl cursor-pointer hover:border-[#D97757] hover:bg-[#FDF4F1] transition-colors text-sm font-medium text-[#524F4A] mb-2 ${uploading.cover ? "opacity-60 pointer-events-none" : ""}`}>
+                                    <Upload className="w-4 h-4" />
+                                    {uploading.cover ? "Enviando..." : "Enviar do computador"}
+                                    <input type="file" accept="image/*" className="hidden" onChange={e => uploadFile(e, "cover")} data-testid="upload-cover" />
+                                </label>
+                                <p className="text-xs text-[#8A857D] text-center mb-2">ou cole a URL</p>
+                                <input value={form.cover_url} onChange={e => set("cover_url", e.target.value)} placeholder="https://..." className={inp} data-testid="field-cover-url" />
                             </Field>
                         </div>
                     )}
@@ -327,7 +367,7 @@ export default function AppRegistrationModal({ onClose, onSuccess }) {
                             className="inline-flex items-center gap-2 bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full px-6 py-2.5 text-sm font-semibold disabled:opacity-60 transition-colors"
                             data-testid="btn-publish"
                         >
-                            {saving ? "Publicando..." : <><Check className="w-4 h-4" /> Publicar app</>}
+                            {saving ? (isEdit ? "Salvando..." : "Publicando...") : <><Check className="w-4 h-4" /> {isEdit ? "Salvar alterações" : "Publicar app"}</>}
                         </button>
                     )}
                 </div>

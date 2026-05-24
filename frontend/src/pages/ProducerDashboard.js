@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Layout } from "../components/Layout";
-import { statsAPI, appsAPI, salesAPI, materialsAPI } from "../lib/api";
+import { statsAPI, appsAPI, salesAPI, materialsAPI, affiliationsAPI } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Plus, TrendingUp, DollarSign, Package, ShoppingBag, X, Megaphone, Copy, Crown, Zap, Check } from "lucide-react";
+import { Plus, TrendingUp, DollarSign, Package, ShoppingBag, X, Megaphone, Copy, Crown, Zap, Check, Pencil, UserCheck, UserX, Clock } from "lucide-react";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import AppRegistrationModal from "../components/AppRegistrationModal";
 
@@ -24,6 +24,8 @@ export default function ProducerDashboard() {
     const [sales, setSales] = useState([]);
     const [showCreate, setShowCreate] = useState(false);
     const [showRegModal, setShowRegModal] = useState(false);
+    const [editApp, setEditApp] = useState(null);
+    const [pendingAffs, setPendingAffs] = useState({});
     const [showMaterials, setShowMaterials] = useState(null);
     const [materials, setMaterials] = useState(null);
     const [showUpgrade, setShowUpgrade] = useState(null);
@@ -68,6 +70,23 @@ export default function ProducerDashboard() {
     const openMaterials = async (app) => {
         setShowMaterials(app);
         materialsAPI.get(app.id).then(setMaterials).catch(() => {});
+    };
+
+    const loadPending = async (appId) => {
+        const data = await affiliationsAPI.pendingForApp(appId).catch(() => []);
+        setPendingAffs(p => ({ ...p, [appId]: data }));
+    };
+
+    const approveAff = async (affId, appId) => {
+        await affiliationsAPI.approve(affId);
+        toast.success("Afiliado aprovado!");
+        loadPending(appId);
+    };
+
+    const rejectAff = async (affId, appId) => {
+        await affiliationsAPI.reject(affId);
+        toast.success("Afiliado recusado.");
+        loadPending(appId);
     };
 
     if (loading || !user) return <Layout><div className="min-h-screen flex items-center justify-center">Carregando...</div></Layout>;
@@ -164,10 +183,36 @@ export default function ProducerDashboard() {
                                         <button onClick={() => openMaterials(a)} className="text-xs bg-[#FDF4F1] text-[#A5472A] border border-[#FBE6DF] rounded-full py-2 font-semibold hover:bg-[#FBE6DF] flex items-center justify-center gap-1.5" data-testid={`materials-${a.id}`}>
                                             <Megaphone className="w-3 h-3" /> Materiais
                                         </button>
+                                        <button onClick={() => setEditApp(a)} className="text-xs bg-white border border-[#E6E1D6] rounded-full py-2 font-semibold hover:border-[#D97757] flex items-center justify-center gap-1.5 text-[#524F4A]" data-testid={`edit-${a.id}`}>
+                                            <Pencil className="w-3 h-3" /> Editar
+                                        </button>
                                         <button onClick={() => setShowUpgrade(a)} className="text-xs bg-[#1A1918] text-white rounded-full py-2 font-semibold hover:bg-[#2A2825] flex items-center justify-center gap-1.5" data-testid={`upgrade-${a.id}`}>
                                             <Crown className="w-3 h-3" /> Plano
                                         </button>
+                                        {a.affiliate_mode === 'manual' && (
+                                            <button onClick={() => loadPending(a.id)} className="text-xs bg-[#F0F9F4] text-[#2D7A5C] border border-[#C3E8D5] rounded-full py-2 font-semibold hover:bg-[#C3E8D5] flex items-center justify-center gap-1.5" data-testid={`pending-affs-${a.id}`}>
+                                                <Clock className="w-3 h-3" /> Afiliados
+                                            </button>
+                                        )}
                                     </div>
+                                    {/* Afiliados pendentes */}
+                                    {pendingAffs[a.id] && pendingAffs[a.id].length > 0 && (
+                                        <div className="mt-3 border-t border-[#E6E1D6] pt-3 space-y-2">
+                                            <p className="text-xs font-semibold text-[#524F4A] uppercase tracking-wider">Aguardando aprovação</p>
+                                            {pendingAffs[a.id].map(aff => (
+                                                <div key={aff.id} className="flex items-center justify-between gap-2">
+                                                    <span className="text-xs text-[#1A1918] truncate">{aff.profiles?.name || "Afiliado"}</span>
+                                                    <div className="flex gap-1 shrink-0">
+                                                        <button onClick={() => approveAff(aff.id, a.id)} className="p-1 rounded-full bg-[#F0F9F4] hover:bg-[#2D7A5C] hover:text-white text-[#2D7A5C] transition-colors" title="Aprovar"><UserCheck className="w-3.5 h-3.5" /></button>
+                                                        <button onClick={() => rejectAff(aff.id, a.id)} className="p-1 rounded-full bg-[#FDF4F1] hover:bg-[#B04646] hover:text-white text-[#B04646] transition-colors" title="Recusar"><UserX className="w-3.5 h-3.5" /></button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    {pendingAffs[a.id] && pendingAffs[a.id].length === 0 && (
+                                        <p className="mt-2 text-xs text-[#8A857D]">Nenhum afiliado pendente.</p>
+                                    )}
                                 </div>
                                 );
                             })}
@@ -179,6 +224,14 @@ export default function ProducerDashboard() {
             {showRegModal && (
                 <AppRegistrationModal
                     onClose={() => setShowRegModal(false)}
+                    onSuccess={() => appsAPI.myApps().then(setApps)}
+                />
+            )}
+
+            {editApp && (
+                <AppRegistrationModal
+                    initialData={editApp}
+                    onClose={() => setEditApp(null)}
                     onSuccess={() => appsAPI.myApps().then(setApps)}
                 />
             )}
