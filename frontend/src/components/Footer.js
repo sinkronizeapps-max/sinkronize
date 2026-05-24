@@ -33,21 +33,20 @@ export const Footer = () => (
                     </ul>
                 </div>
                 <div>
-                    <h4 className="text-xs uppercase tracking-widest text-[#8A857D] mb-4">Recursos</h4>
+                    <h4 className="text-xs uppercase tracking-widest text-[#8A857D] mb-4">Suporte</h4>
                     <ul className="space-y-2.5 text-sm">
-                        <li><a href="#" className="hover:text-[#D97757]">Blog</a></li>
-                        <li><a href="#" className="hover:text-[#D97757]">Central de ajuda</a></li>
-                        <li><a href="#" className="hover:text-[#D97757]">Comunidade</a></li>
-                        <li><a href="#" className="hover:text-[#D97757]">Documentação API</a></li>
+                        <li><Link to="/faq" className="hover:text-[#D97757]">FAQ</Link></li>
+                        <li><Link to="/contato" className="hover:text-[#D97757]">Fale conosco</Link></li>
+                        <li><a href="https://wa.me/5511962072438" target="_blank" rel="noopener noreferrer" className="hover:text-[#D97757]">WhatsApp</a></li>
+                        <li><a href="mailto:contatosinkronize@gmail.com" className="hover:text-[#D97757]">E-mail</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 className="text-xs uppercase tracking-widest text-[#8A857D] mb-4">Empresa</h4>
+                    <h4 className="text-xs uppercase tracking-widest text-[#8A857D] mb-4">Legal</h4>
                     <ul className="space-y-2.5 text-sm">
-                        <li><a href="#" className="hover:text-[#D97757]">Sobre</a></li>
-                        <li><a href="#" className="hover:text-[#D97757]">Carreiras</a></li>
-                        <li><a href="#" className="hover:text-[#D97757]">Imprensa</a></li>
-                        <li><a href="#" className="hover:text-[#D97757]">Contato</a></li>
+                        <li><Link to="/termos" className="hover:text-[#D97757]">Termos de Uso</Link></li>
+                        <li><Link to="/privacidade" className="hover:text-[#D97757]">Privacidade (LGPD)</Link></li>
+                        <li><Link to="/faq" className="hover:text-[#D97757]">Perguntas Frequentes</Link></li>
                     </ul>
                 </div>
             </div>
@@ -55,9 +54,9 @@ export const Footer = () => (
             <div className="mt-16 pt-8 border-t border-[#3A3935] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <p className="text-xs text-[#8A857D]">© {new Date().getFullYear()} SINKRONIZE. Todos os direitos reservados.</p>
                 <div className="flex gap-6 text-xs text-[#8A857D]">
-                    <a href="#" className="hover:text-[#D97757]">Termos de uso</a>
-                    <a href="#" className="hover:text-[#D97757]">Privacidade</a>
-                    <a href="#" className="hover:text-[#D97757]">Cookies</a>
+                    <Link to="/termos" className="hover:text-[#D97757]">Termos de uso</Link>
+                    <Link to="/privacidade" className="hover:text-[#D97757]">Privacidade</Link>
+                    <Link to="/faq" className="hover:text-[#D97757]">FAQ</Link>
                 </div>
             </div>
         </div>

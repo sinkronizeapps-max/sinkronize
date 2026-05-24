@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     const origin = req.headers.get("origin") || "https://sinkronize.vercel.app";
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
+      payment_method_types: ["card", "boleto"],
       customer_email: buyerEmail,
       line_items: [
         {

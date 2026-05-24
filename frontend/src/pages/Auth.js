@@ -107,10 +107,12 @@ export function Register() {
     const params = new URLSearchParams(location.search);
     const defaultRole = params.get("role") || "both";
     const [form, setForm] = useState({ name: "", email: "", password: "", role: defaultRole });
+    const [terms, setTerms] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const submit = async (e) => {
         e.preventDefault();
+        if (!terms) { toast.error("Você precisa aceitar os Termos de Uso e a Política de Privacidade"); return; }
         setLoading(true);
         try {
             await register(form);
@@ -189,7 +191,27 @@ export function Register() {
                         </div>
                     </div>
 
-                    <button type="submit" disabled={loading} className="w-full mt-6 bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full py-3 font-semibold transition-colors disabled:opacity-60" data-testid="register-submit-button">
+                    {/* Aceite dos termos */}
+                    <label className="flex items-start gap-3 mt-4 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={terms}
+                            onChange={e => setTerms(e.target.checked)}
+                            className="mt-0.5 w-4 h-4 accent-[#D97757] shrink-0"
+                            data-testid="register-terms-checkbox"
+                        />
+                        <span className="text-xs text-[#524F4A] leading-relaxed">
+                            Li e concordo com os{" "}
+                            <Link to="/termos" target="_blank" className="text-[#D97757] hover:underline font-semibold">Termos de Uso</Link>
+                            {" "}e a{" "}
+                            <Link to="/privacidade" target="_blank" className="text-[#D97757] hover:underline font-semibold">Política de Privacidade</Link>
+                            {" "}da SINKRONIZE
+                            {form.role === "producer" && <span className="block mt-1 text-[#8A857D]">Como Produtor, também concordo em pagar a taxa de 9,9% por venda realizada.</span>}
+                            {form.role === "affiliate" && <span className="block mt-1 text-[#8A857D]">Como Afiliado, declaro que divulgarei os produtos de forma honesta e transparente.</span>}
+                        </span>
+                    </label>
+
+                    <button type="submit" disabled={loading || !terms} className="w-full mt-5 bg-[#D97757] hover:bg-[#C55D3D] text-white rounded-full py-3 font-semibold transition-colors disabled:opacity-60" data-testid="register-submit-button">
                         {loading ? "Criando..." : "Criar minha conta"}
                     </button>
 

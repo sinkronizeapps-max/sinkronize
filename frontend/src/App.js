@@ -15,6 +15,9 @@ import MinhasCompras from "./pages/MinhasCompras";
 import { ForProducers, ForAffiliates } from "./pages/Info";
 import Contact from "./pages/Contact";
 import AdminDashboard from "./pages/AdminDashboard";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import FAQ from "./pages/FAQ";
 import "./App.css";
 
 function AppRouter() {
@@ -45,6 +48,9 @@ function AppRouter() {
             <Route path="/esqueci-senha" element={<ForgotPassword />} />
             <Route path="/redefinir-senha" element={<ResetPassword />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/termos" element={<Terms />} />
+            <Route path="/privacidade" element={<Privacy />} />
+            <Route path="/faq" element={<FAQ />} />
         </Routes>
     );
 }

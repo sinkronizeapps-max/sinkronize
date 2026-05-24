@@ -34,6 +34,7 @@ export default function AdminDashboard() {
     const [apps,        setApps]        = useState([]);
     const [affiliations,setAffiliations]= useState([]);
     const [abandoned,   setAbandoned]   = useState([]);
+    const [withdrawals, setWithdrawals] = useState([]);
     const [dataLoad,    setDataLoad]    = useState(false);
 
     // ── UI ─────────────────────────────────────────────────────────────────────
@@ -71,12 +72,14 @@ export default function AdminDashboard() {
                 { data: appsData },
                 { data: affsData },
                 { data: attemptsData },
+                { data: withdrawalsData },
             ] = await Promise.all([
                 supabase.from("profiles").select("*").order("created_at", { ascending: false }),
                 supabase.from("sales").select("*").order("created_at", { ascending: false }),
                 supabase.from("apps").select("*").order("created_at", { ascending: false }),
                 supabase.from("affiliations").select("*").order("created_at", { ascending: false }),
                 supabase.from("checkout_attempts").select("*").order("created_at", { ascending: false }),
+                supabase.from("withdrawals").select("*, profiles(name, email)").order("created_at", { ascending: false }),
             ]);
 
             const profs = profsData || [];
@@ -102,6 +105,7 @@ export default function AdminDashboard() {
             setAbandoned((attemptsData || []).filter(
                 a => a.status === "abandoned" || (a.status === "pending" && a.created_at < twoHoursAgo)
             ));
+            setWithdrawals(withdrawalsData || []);
         } finally {
             setDataLoad(false);
         }
@@ -178,7 +182,13 @@ export default function AdminDashboard() {
         { id: "clients",    label: "Clientes",     icon: Users,        count: clients.length },
         { id: "sales",      label: "Vendas",       icon: DollarSign,   count: sales.length },
         { id: "abandoned",  label: "Abandonados",  icon: ShoppingCart, count: abandoned.length },
+        { id: "withdrawals",label: "Saques",       icon: DollarSign,   count: withdrawals.filter(w => w.status === "pending").length },
     ];
+
+    const markWithdrawalPaid = async (id) => {
+        await supabase.from("withdrawals").update({ status: "paid", paid_at: new Date().toISOString() }).eq("id", id);
+        setWithdrawals(ws => ws.map(w => w.id === id ? { ...w, status: "paid" } : w));
+    };
 
     const TH = ({ children }) => (
         <th className="text-left px-4 py-3 text-xs font-semibold text-[#8A857D] uppercase tracking-wider whitespace-nowrap">{children}</th>
@@ -399,6 +409,46 @@ export default function AdminDashboard() {
                                 {!sales.length && <tr><td colSpan={8} className="px-4 py-10 text-center text-[#8A857D]">Nenhuma venda ainda</td></tr>}
                             </tbody>
                         </table>
+                    </div>
+                )}
+
+                {/* ── SAQUES ─────────────────────────────────────────────────── */}
+                {tab === "withdrawals" && (
+                    <div className="space-y-4">
+                        <div className="bg-[#FDF4F1] border border-[#FBE6DF] rounded-2xl p-4 text-sm text-[#A5472A]">
+                            Solicitações de saque dos produtores e afiliados. Clique em "Marcar como pago" após realizar o PIX.
+                        </div>
+                        <div className="bg-white rounded-2xl border border-[#E6E1D6] overflow-x-auto">
+                            <table className="w-full text-sm">
+                                <thead className="bg-[#F5F0E8]"><tr><TH>Usuário</TH><TH>Valor</TH><TH>Chave PIX</TH><TH>Status</TH><TH>Solicitado em</TH><TH>Ação</TH></tr></thead>
+                                <tbody className="divide-y divide-[#E6E1D6]">
+                                    {filter(withdrawals, ["pix_key"]).map(w => (
+                                        <tr key={w.id} className="hover:bg-[#FAF9F5]">
+                                            <TD>
+                                                <p className="font-medium text-[#1A1918]">{w.profiles?.name || "—"}</p>
+                                                <p className="text-xs text-[#8A857D]">{w.profiles?.email}</p>
+                                            </TD>
+                                            <TD cls="font-semibold text-[#2D7A5C] text-base">{fmt(w.amount)}</TD>
+                                            <TD cls="font-mono text-xs">{w.pix_key}</TD>
+                                            <TD>
+                                                <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${w.status === "paid" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
+                                                    {w.status === "paid" ? "✓ Pago" : "Pendente"}
+                                                </span>
+                                            </TD>
+                                            <TD cls="text-xs text-[#8A857D] whitespace-nowrap">{fmtDate(w.created_at)}</TD>
+                                            <TD>
+                                                {w.status === "pending" && (
+                                                    <button onClick={() => markWithdrawalPaid(w.id)} className="bg-[#2D7A5C] hover:bg-[#236249] text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition-colors">
+                                                        Marcar como pago
+                                                    </button>
+                                                )}
+                                            </TD>
+                                        </tr>
+                                    ))}
+                                    {!withdrawals.length && <tr><td colSpan={6} className="px-4 py-10 text-center text-[#8A857D]">Nenhuma solicitação ainda</td></tr>}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
 

@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Menu, X, ChevronDown, LogOut, LayoutDashboard, Wallet as WalletIcon, ShoppingBag, MessageCircle } from "lucide-react";
-import { useState } from "react";
+import { Menu, X, ChevronDown, LogOut, LayoutDashboard, Wallet as WalletIcon, ShoppingBag, MessageCircle, Bell, User } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { supabase } from "../lib/supabase";
 
 const LOGO = "/sinkronize-icon.png";
 
@@ -10,6 +11,27 @@ export const Header = () => {
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [menu, setMenu] = useState(false);
+    const [notifOpen, setNotifOpen] = useState(false);
+    const [notifs, setNotifs] = useState([]);
+    const notifRef = useRef(null);
+
+    useEffect(() => {
+        if (!user) return;
+        supabase.from("notifications").select("*").eq("user_id", user.id).is("read_at", null).order("created_at", { ascending: false }).limit(20)
+            .then(({ data }) => setNotifs(data || []));
+    }, [user]);
+
+    useEffect(() => {
+        const handler = (e) => { if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false); };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, []);
+
+    const markAllRead = async () => {
+        if (!notifs.length) return;
+        await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("user_id", user.id).is("read_at", null);
+        setNotifs([]);
+    };
 
     return (
         <header className="fixed top-0 inset-x-0 z-50 bg-[#FAF9F5]/85 backdrop-blur-xl border-b border-[#E6E1D6]">
@@ -26,6 +48,35 @@ export const Header = () => {
                     </Link>
 
                     {user ? (
+                        <>
+                        {/* Sino de notificações */}
+                        <div className="relative" ref={notifRef}>
+                            <button onClick={() => setNotifOpen(v => !v)} className="relative p-2 rounded-full hover:bg-[#F5F0E8] transition-colors" data-testid="notifications-bell">
+                                <Bell className="w-5 h-5 text-[#524F4A]" />
+                                {notifs.length > 0 && <span className="absolute top-1 right-1 w-4 h-4 bg-[#D97757] text-white text-[9px] font-bold rounded-full flex items-center justify-center">{notifs.length > 9 ? "9+" : notifs.length}</span>}
+                            </button>
+                            {notifOpen && (
+                                <div className="absolute right-0 mt-2 w-80 bg-white border border-[#E6E1D6] rounded-2xl shadow-lg overflow-hidden z-50" data-testid="notifications-dropdown">
+                                    <div className="px-4 py-3 flex items-center justify-between border-b border-[#E6E1D6]">
+                                        <span className="text-xs font-semibold uppercase tracking-widest text-[#8A857D]">Notificações</span>
+                                        {notifs.length > 0 && <button onClick={markAllRead} className="text-xs text-[#D97757] hover:underline">Marcar todas como lidas</button>}
+                                    </div>
+                                    <div className="max-h-72 overflow-y-auto">
+                                        {notifs.length === 0
+                                            ? <p className="px-4 py-6 text-sm text-[#8A857D] text-center">Nenhuma notificação nova</p>
+                                            : notifs.map(n => (
+                                                <div key={n.id} className="px-4 py-3 border-b border-[#F5F0E8] last:border-0 hover:bg-[#FAF9F5]">
+                                                    <p className="text-sm font-semibold text-[#1A1918]">{n.title}</p>
+                                                    <p className="text-xs text-[#524F4A] mt-0.5">{n.message}</p>
+                                                    <p className="text-[10px] text-[#C4BDB5] mt-1">{new Date(n.created_at).toLocaleDateString("pt-BR")}</p>
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         <div className="relative">
                             <button onClick={() => setMenu(!menu)} className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#E6E1D6] hover:border-[#D97757] transition-colors" data-testid="header-user-menu">
                                 {user.picture ? (
@@ -62,9 +113,11 @@ export const Header = () => {
                                 </div>
                             )}
                         </div>
+                        </>
                     ) : (
                         <Link to="/login" className="text-sm font-medium bg-[#D97757] text-white hover:bg-[#C55D3D] rounded-full px-5 py-2.5 transition-colors shadow-sm" data-testid="header-login-link">Entrar</Link>
                     )}
+
                 </div>
 
                 <button className="md:hidden p-2" onClick={() => setOpen(!open)} data-testid="header-mobile-toggle">
