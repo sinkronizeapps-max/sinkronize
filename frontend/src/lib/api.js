@@ -553,6 +553,66 @@ export const statsAPI = {
 };
 
 // =============================================
+// COUPONS
+// =============================================
+export const couponsAPI = {
+  list: async (appId) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Não autenticado');
+    const query = supabase.from('coupons').select('*').eq('producer_id', user.id).order('created_at', { ascending: false });
+    if (appId) query.eq('app_id', appId);
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  create: async ({ appId, code, discountType, discountValue, maxUses, validUntil }) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Não autenticado');
+    const { data, error } = await supabase.from('coupons').insert({
+      app_id: appId,
+      producer_id: user.id,
+      code: code.toUpperCase().trim(),
+      discount_type: discountType,
+      discount_value: discountValue,
+      max_uses: maxUses || null,
+      valid_until: validUntil || null,
+      active: true,
+    }).select().single();
+    if (error) throw error;
+    return data;
+  },
+
+  toggle: async (couponId, active) => {
+    const { error } = await supabase.from('coupons').update({ active }).eq('id', couponId);
+    if (error) throw error;
+  },
+
+  delete: async (couponId) => {
+    const { error } = await supabase.from('coupons').delete().eq('id', couponId);
+    if (error) throw error;
+  },
+
+  validate: async (appId, code) => {
+    const { data, error } = await supabase.from('coupons')
+      .select('*')
+      .eq('app_id', appId)
+      .eq('code', code.toUpperCase())
+      .eq('active', true)
+      .single();
+    if (error || !data) throw new Error('Cupom inválido ou expirado');
+    if (data.valid_until && new Date(data.valid_until) < new Date()) throw new Error('Cupom expirado');
+    if (data.max_uses && data.uses >= data.max_uses) throw new Error('Cupom esgotado');
+    return data;
+  },
+
+  incrementUse: async (couponId) => {
+    const { data } = await supabase.from('coupons').select('uses').eq('id', couponId).single();
+    if (data) await supabase.from('coupons').update({ uses: data.uses + 1 }).eq('id', couponId);
+  }
+};
+
+// =============================================
 // STORAGE
 // =============================================
 export const storageAPI = {

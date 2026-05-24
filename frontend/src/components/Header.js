@@ -89,6 +89,9 @@ export const Header = () => {
                             </button>
                             {menu && (
                                 <div className="absolute right-0 mt-2 w-56 bg-white border border-[#E6E1D6] rounded-2xl shadow-lg overflow-hidden" data-testid="user-menu-dropdown">
+                                    <button onClick={() => { setMenu(false); navigate("/perfil"); }} className="w-full text-left px-4 py-3 text-sm hover:bg-[#F5F0E8] flex items-center gap-2 border-b border-[#E6E1D6]" data-testid="menu-profile">
+                                        <User className="w-4 h-4" /> Meu perfil
+                                    </button>
                                     <div className="px-4 py-2 text-xs uppercase tracking-widest text-[#8A857D] font-semibold border-b border-[#E6E1D6]">Comprador</div>
                                     <button onClick={() => { setMenu(false); navigate("/minhas-compras"); }} className="w-full text-left px-4 py-3 text-sm hover:bg-[#F5F0E8] flex items-center gap-2" data-testid="menu-purchases">
                                         <ShoppingBag className="w-4 h-4" /> Minhas compras

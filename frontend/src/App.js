@@ -18,6 +18,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import FAQ from "./pages/FAQ";
+import Profile from "./pages/Profile";
 import "./App.css";
 
 function AppRouter() {
@@ -51,6 +52,7 @@ function AppRouter() {
             <Route path="/termos" element={<Terms />} />
             <Route path="/privacidade" element={<Privacy />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/perfil" element={<Profile />} />
         </Routes>
     );
 }

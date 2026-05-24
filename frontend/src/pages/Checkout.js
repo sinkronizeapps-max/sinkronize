@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { appsAPI } from "../lib/api";
+import { appsAPI, couponsAPI } from "../lib/api";
 import { Layout } from "../components/Layout";
-import { Lock, Check, ShieldCheck } from "lucide-react";
+import { Lock, Check, ShieldCheck, Tag, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "../lib/supabase";
 
@@ -17,8 +17,42 @@ export default function Checkout() {
         affiliation_code: new URLSearchParams(window.location.search).get("ref") || "",
     });
     const [loading, setLoading] = useState(false);
+    const [couponInput, setCouponInput] = useState("");
+    const [coupon, setCoupon] = useState(null);
+    const [couponLoading, setCouponLoading] = useState(false);
 
     useEffect(() => { appsAPI.getBySlug(slug).then(setApp).catch(() => {}); }, [slug]);
+
+    const applyCoupon = async () => {
+        if (!couponInput.trim()) return;
+        setCouponLoading(true);
+        try {
+            const c = await couponsAPI.validate(app.id, couponInput.trim().toUpperCase());
+            setCoupon(c);
+            toast.success(`Cupom "${c.code}" aplicado!`);
+        } catch (err) {
+            toast.error(err.message || "Cupom inválido");
+            setCoupon(null);
+        } finally {
+            setCouponLoading(false);
+        }
+    };
+
+    const removeCoupon = () => {
+        setCoupon(null);
+        setCouponInput("");
+    };
+
+    const getDiscount = () => {
+        if (!coupon || !app) return 0;
+        if (coupon.discount_type === "percent") return app.price_monthly * coupon.discount_value / 100;
+        return Math.min(coupon.discount_value, app.price_monthly);
+    };
+
+    const getFinalPrice = () => {
+        if (!app) return 0;
+        return Math.max(0, app.price_monthly - getDiscount());
+    };
 
     const submit = async (e) => {
         e.preventDefault();
@@ -28,6 +62,7 @@ export default function Checkout() {
         }
         setLoading(true);
         try {
+            const finalPrice = getFinalPrice();
             const { data, error } = await supabase.functions.invoke("create-checkout", {
                 body: {
                     appId: app.id,
@@ -35,9 +70,12 @@ export default function Checkout() {
                     buyerName: form.buyer_name,
                     affiliationCode: form.affiliation_code || null,
                     installments: form.installments,
+                    couponCode: coupon?.code || null,
+                    discountAmount: getDiscount(),
                 },
             });
             if (error || !data?.url) throw new Error(error?.message || "Erro ao criar sessão");
+
             // Registrar tentativa para rastreamento de carrinhos abandonados
             supabase.from("checkout_attempts").insert({
                 app_id: app.id,
@@ -45,11 +83,17 @@ export default function Checkout() {
                 app_slug: app.slug,
                 buyer_email: form.buyer_email.toLowerCase(),
                 buyer_name: form.buyer_name,
-                amount: app.price_monthly,
+                amount: finalPrice,
                 stripe_session_id: data.session_id || null,
                 affiliation_code: form.affiliation_code || null,
                 status: "pending",
             }).then(() => {});
+
+            // Mark coupon as used
+            if (coupon) {
+                couponsAPI.incrementUse(coupon.id).catch(() => {});
+            }
+
             window.location.href = data.url;
         } catch (err) {
             toast.error("Erro ao redirecionar para o pagamento. Tente novamente.");
@@ -58,6 +102,9 @@ export default function Checkout() {
     };
 
     if (!app) return <Layout><div className="min-h-[60vh] flex items-center justify-center">Carregando...</div></Layout>;
+
+    const discount = getDiscount();
+    const finalPrice = getFinalPrice();
 
     return (
         <Layout>
@@ -102,14 +149,55 @@ export default function Checkout() {
                                 {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
                                     <option key={n} value={n}>
                                         {n === 1
-                                            ? `À vista — R$ ${app.price_monthly.toFixed(2)}`
-                                            : `${n}x de R$ ${(app.price_monthly / n).toFixed(2)} sem juros`}
+                                            ? `À vista — R$ ${finalPrice.toFixed(2)}`
+                                            : `${n}x de R$ ${(finalPrice / n).toFixed(2)} sem juros`}
                                     </option>
                                 ))}
                             </select>
                             {form.affiliation_code && (
                                 <div className="bg-[#FDF4F1] border border-[#FBE6DF] rounded-xl p-3 text-sm text-[#A5472A]">
                                     Indicação aplicada: <strong>{form.affiliation_code}</strong>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Cupom de desconto */}
+                        <div className="bg-white border border-[#E6E1D6] rounded-2xl p-6 space-y-3">
+                            <h3 className="font-serif-display text-lg font-semibold flex items-center gap-2">
+                                <Tag className="w-4 h-4 text-[#D97757]" /> Cupom de desconto
+                            </h3>
+                            {coupon ? (
+                                <div className="flex items-center justify-between bg-[#F0F9F4] border border-[#C3E8D5] rounded-xl p-3">
+                                    <div>
+                                        <p className="text-sm font-semibold text-[#2D7A5C]">{coupon.code}</p>
+                                        <p className="text-xs text-[#524F4A]">
+                                            Desconto de {coupon.discount_type === "percent" ? `${coupon.discount_value}%` : `R$ ${coupon.discount_value.toFixed(2)}`}
+                                            {" "}<span className="font-semibold text-[#2D7A5C]">(-R$ {discount.toFixed(2)})</span>
+                                        </p>
+                                    </div>
+                                    <button type="button" onClick={removeCoupon} className="p-1 text-[#8A857D] hover:text-[#B04646]">
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="flex gap-2">
+                                    <input
+                                        value={couponInput}
+                                        onChange={e => setCouponInput(e.target.value.toUpperCase())}
+                                        onKeyDown={e => e.key === "Enter" && (e.preventDefault(), applyCoupon())}
+                                        placeholder="Código do cupom"
+                                        className="flex-1 bg-[#FAF9F5] border border-[#E6E1D6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#D97757] uppercase placeholder:normal-case"
+                                        data-testid="checkout-coupon"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={applyCoupon}
+                                        disabled={!couponInput.trim() || couponLoading}
+                                        className="bg-[#1A1918] text-white rounded-xl px-5 py-3 text-sm font-semibold hover:bg-[#2A2825] disabled:opacity-40 transition-colors whitespace-nowrap"
+                                        data-testid="checkout-apply-coupon"
+                                    >
+                                        {couponLoading ? "..." : "Aplicar"}
+                                    </button>
                                 </div>
                             )}
                         </div>
@@ -126,7 +214,7 @@ export default function Checkout() {
                             data-testid="checkout-submit"
                         >
                             <Lock className="w-4 h-4" />
-                            {loading ? "Redirecionando..." : `Ir para o pagamento — R$ ${app.price_monthly.toFixed(2)}`}
+                            {loading ? "Redirecionando..." : `Ir para o pagamento — R$ ${finalPrice.toFixed(2)}`}
                         </button>
                     </form>
 
@@ -142,12 +230,23 @@ export default function Checkout() {
                             </div>
                             <div className="space-y-2 py-4 text-sm">
                                 <div className="flex justify-between text-[#524F4A]"><span>Assinatura mensal</span><span>R$ {app.price_monthly.toFixed(2)}</span></div>
+                                {discount > 0 && (
+                                    <div className="flex justify-between text-[#2D7A5C] font-semibold">
+                                        <span>Desconto ({coupon?.code})</span>
+                                        <span>- R$ {discount.toFixed(2)}</span>
+                                    </div>
+                                )}
                                 <div className="flex justify-between text-[#524F4A]"><span>Acesso instantâneo</span><span className="text-[#2D7A5C]">Incluso</span></div>
                             </div>
                             <div className="flex justify-between font-serif-display text-xl pt-4 border-t border-[#E6E1D6]">
                                 <span>Total</span>
-                                <span>R$ {app.price_monthly.toFixed(2)}</span>
+                                <span className={discount > 0 ? "text-[#2D7A5C]" : ""}>R$ {finalPrice.toFixed(2)}</span>
                             </div>
+                            {discount > 0 && (
+                                <p className="text-center text-xs text-[#2D7A5C] font-semibold mt-2">
+                                    Você está economizando R$ {discount.toFixed(2)}!
+                                </p>
+                            )}
                             <div className="mt-4 flex items-center justify-center gap-2 text-xs text-[#8A857D]">
                                 <ShieldCheck className="w-3.5 h-3.5" />
                                 Pagamento processado por Stripe

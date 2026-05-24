@@ -18,6 +18,33 @@ export default function AppDetail() {
         appsAPI.getBySlug(slug).then((appData) => {
             setApp(appData);
             reviewsAPI.list(appData.id).then(setReviews).catch(() => {});
+            // Inject Facebook Pixel ViewContent event
+            if (appData?.facebook_pixel_id) {
+                const s = document.createElement("script");
+                s.innerHTML = `
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','${appData.facebook_pixel_id}');
+fbq('track','ViewContent',{content_name:'${appData.name.replace(/'/g, "\\'")}',value:${appData.price_monthly},currency:'BRL'});
+                `;
+                document.head.appendChild(s);
+            }
+            // Google Tag PageView
+            if (appData?.google_tag_id) {
+                const gs = document.createElement("script");
+                gs.async = true;
+                gs.src = `https://www.googletagmanager.com/gtag/js?id=${appData.google_tag_id}`;
+                document.head.appendChild(gs);
+                const gs2 = document.createElement("script");
+                gs2.innerHTML = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${appData.google_tag_id}');`;
+                document.head.appendChild(gs2);
+            }
         }).catch(() => {});
     }, [slug]);
 

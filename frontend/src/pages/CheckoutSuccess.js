@@ -4,14 +4,66 @@ import { appsAPI } from "../lib/api";
 import { Layout } from "../components/Layout";
 import { Check, ArrowRight } from "lucide-react";
 
+function firePixel(app, amount) {
+    // Facebook Pixel
+    if (app.facebook_pixel_id) {
+        const script = document.createElement("script");
+        script.innerHTML = `
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '${app.facebook_pixel_id}');
+fbq('track', 'Purchase', {value: ${amount}, currency: 'BRL', content_name: '${app.name.replace(/'/g, "\\'")}'});
+        `;
+        document.head.appendChild(script);
+    }
+
+    // Google Tag / Google Ads
+    if (app.google_tag_id) {
+        const gscript = document.createElement("script");
+        gscript.async = true;
+        gscript.src = `https://www.googletagmanager.com/gtag/js?id=${app.google_tag_id}`;
+        document.head.appendChild(gscript);
+
+        const gscript2 = document.createElement("script");
+        gscript2.innerHTML = `
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${app.google_tag_id}');
+gtag('event', 'purchase', {
+  transaction_id: '${Date.now()}',
+  value: ${amount},
+  currency: 'BRL',
+  items: [{item_name: '${app.name.replace(/'/g, "\\'")}', price: ${amount}, quantity: 1}]
+});
+        `;
+        document.head.appendChild(gscript2);
+    }
+}
+
 export default function CheckoutSuccess() {
     const { slug } = useParams();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const [app, setApp] = useState(null);
     const sessionId = searchParams.get("session_id");
+    const [pixelFired, setPixelFired] = useState(false);
 
-    useEffect(() => { appsAPI.getBySlug(slug).then(setApp).catch(() => {}); }, [slug]);
+    useEffect(() => {
+        appsAPI.getBySlug(slug).then(appData => {
+            setApp(appData);
+            if (!pixelFired && appData) {
+                firePixel(appData, appData.price_monthly);
+                setPixelFired(true);
+            }
+        }).catch(() => {});
+    }, [slug]); // eslint-disable-line
 
     return (
         <Layout>
@@ -30,6 +82,14 @@ export default function CheckoutSuccess() {
                     <div className="bg-white border border-[#E6E1D6] rounded-2xl p-4 text-left text-xs text-[#8A857D] mb-8 break-all">
                         <span className="font-semibold">ID da sessão Stripe:</span> {sessionId}
                     </div>
+                )}
+                {app?.thank_you_url && (
+                    <a
+                        href={`${app.thank_you_url}?email=${encodeURIComponent("")}&app=${slug}`}
+                        className="inline-flex items-center gap-2 bg-[#1A1918] text-white rounded-full px-8 py-3 font-semibold hover:bg-[#2A2825] mb-4 mr-3"
+                    >
+                        Acessar o app <ArrowRight className="w-4 h-4" />
+                    </a>
                 )}
                 <button
                     onClick={() => navigate("/marketplace")}

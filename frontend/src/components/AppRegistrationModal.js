@@ -20,7 +20,7 @@ const EMPTY = {
     price_monthly: 29.90,
     commission_pct: 40, affiliate_mode: "open",
     sales_page_url: "", thank_you_url: "",
-    webhook_url: "",
+    webhook_url: "", facebook_pixel_id: "", google_tag_id: "",
 };
 
 function Field({ label, hint, children }) {
@@ -311,8 +311,46 @@ export default function AppRegistrationModal({ onClose, onSuccess, initialData =
                                 <input value={form.webhook_url} onChange={e => set("webhook_url", e.target.value)} placeholder="https://meuapp.com.br/webhook/sinkronize" className={inp} data-testid="field-webhook-url" />
                             </Field>
 
+                            <div className="border-t border-[#E6E1D6] pt-6">
+                                <p className="text-sm font-semibold text-[#1A1918] mb-1 flex items-center gap-2">
+                                    <Zap className="w-4 h-4 text-[#D97757]" /> Rastreamento de conversão
+                                </p>
+                                <p className="text-xs text-[#8A857D] mb-4">Configure seus pixels para rastrear vendas direto no seu painel de anúncios</p>
+
+                                <div className="space-y-4">
+                                    <Field label="Facebook Pixel ID" hint="Apenas o número. Ex: 1234567890123">
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-[#1877F2] bg-[#E7F0FD] px-1.5 py-0.5 rounded">FB</span>
+                                            <input
+                                                value={form.facebook_pixel_id}
+                                                onChange={e => set("facebook_pixel_id", e.target.value.replace(/\D/g, ""))}
+                                                placeholder="Ex: 1234567890123"
+                                                className={inp + " pl-12"}
+                                                data-testid="field-fb-pixel"
+                                            />
+                                        </div>
+                                    </Field>
+                                    <Field label="Google Tag ID" hint="Começa com G- ou AW-. Ex: G-XXXXXXXXXX ou AW-123456789">
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-white bg-[#4285F4] px-1.5 py-0.5 rounded">G</span>
+                                            <input
+                                                value={form.google_tag_id}
+                                                onChange={e => set("google_tag_id", e.target.value)}
+                                                placeholder="Ex: G-XXXXXXXXXX"
+                                                className={inp + " pl-12"}
+                                                data-testid="field-gtag"
+                                            />
+                                        </div>
+                                    </Field>
+                                </div>
+
+                                <div className="mt-4 bg-[#FDF4F1] border border-[#FBE6DF] rounded-xl p-3 text-xs text-[#A5472A]">
+                                    <strong>Como funciona:</strong> quando alguém comprar seu app, a SINKRONIZE dispara automaticamente um evento <code className="bg-white px-1 rounded">Purchase</code> no seu pixel — com o valor exato da venda.
+                                </div>
+                            </div>
+
                             <div className="bg-[#1A1918] rounded-2xl p-5 text-sm">
-                                <p className="text-[#D97757] font-semibold text-xs uppercase tracking-widest mb-3">Payload enviado (JSON)</p>
+                                <p className="text-[#D97757] font-semibold text-xs uppercase tracking-widest mb-3">Payload Webhook (JSON)</p>
                                 <pre className="text-green-400 text-xs leading-relaxed overflow-x-auto">{`{
   "event": "sale.confirmed",
   "app_id": "uuid-do-app",
@@ -325,11 +363,6 @@ export default function AppRegistrationModal({ onClose, onSuccess, initialData =
   "affiliation_code": "ABC123",
   "created_at": "2025-05-24T14:00:00Z"
 }`}</pre>
-                            </div>
-
-                            <div className="bg-[#F0F9F4] border border-[#C3E8D5] rounded-2xl p-4 text-sm text-[#1A4D35]">
-                                <p className="font-semibold mb-1">Dica</p>
-                                <p>Use o webhook para liberar acesso automaticamente no seu app quando a venda chegar. Não é obrigatório — você também pode usar a URL de obrigado para isso.</p>
                             </div>
                         </div>
                     )}
